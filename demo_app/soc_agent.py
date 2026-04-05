@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from archon_sdk.client import ArchonClient
+from vergil_sdk.client import VergilClient
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - SOC_AGENT - [%(levelname)s] - %(message)s")
 logger = logging.getLogger("soc_agent")
@@ -8,7 +8,7 @@ logger = logging.getLogger("soc_agent")
 async def main():
     logger.info("Initializing SOC Autonomous Agent...")
     
-    async with ArchonClient(base_url="http://localhost:8000") as archon:
+    async with VergilClient(base_url="http://localhost:8000") as vergil:
         # Scenario 1: Low Risk (Auto-approved)
         logger.info("\n--- SCENARIO 1: LOW RISK ---")
         logger.info("Event: Detected routine port scan.")
@@ -16,7 +16,7 @@ async def main():
         conf1 = 0.95
         
         logger.info(f"Proposing Action: '{action1}' with confidence: {conf1}")
-        approved1 = await archon.execute(action=action1, confidence=conf1, threshold=0.90, user_id="soc_admin@company.com")
+        approved1 = await vergil.execute(action=action1, confidence=conf1, threshold=0.90, user_id="soc_admin@company.com")
         if approved1:
             logger.info(f"Action '{action1}' EXECUTED successfully.")
         else:
@@ -33,7 +33,7 @@ async def main():
         logger.info(f"Proposing Action: '{action2}' with confidence: {conf2}")
         
         # This will pause and wait for the Step-Up Auth URL to be clicked and approved
-        approved2 = await archon.execute(action=action2, confidence=conf2, threshold=0.90, user_id="soc_admin@company.com")
+        approved2 = await vergil.execute(action=action2, confidence=conf2, threshold=0.90, user_id="soc_admin@company.com")
         
         if approved2:
             logger.info(f"Action '{action2}' EXECUTED successfully.")
@@ -51,7 +51,7 @@ async def main():
         trustees = ["ciso@company.com", "vp_eng@company.com", "oncall_lead@company.com"]
         
         # This will pause and wait for TWO Auth0 Step-up approval callbacks for the listed trustees
-        approved3 = await archon.require_quorum(action=action3, trustees=trustees, required=2)
+        approved3 = await vergil.require_quorum(action=action3, trustees=trustees, required=2)
         
         if approved3:
             logger.info(f"Action '{action3}' EXECUTED successfully.")

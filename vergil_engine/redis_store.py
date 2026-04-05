@@ -1,8 +1,8 @@
 import redis.asyncio as redis
 import json
 from typing import Optional
-from archon_engine.config import settings
-from archon_engine.models import ActionState, QuorumStateModel
+from vergil_engine.config import settings
+from vergil_engine.models import ActionState, QuorumStateModel
 
 class RedisStore:
     def __init__(self):

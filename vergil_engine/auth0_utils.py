@@ -4,7 +4,7 @@ import requests
 from fastapi import HTTPException, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from archon_engine.config import settings
+from vergil_engine.config import settings
 
 # ---------- RS256 JWT Verification ----------
 

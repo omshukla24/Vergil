@@ -1,8 +1,8 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 import urllib.parse
-from archon_engine.main import app
-from archon_engine.models import ActionState, QuorumStateModel
+from vergil_engine.main import app
+from vergil_engine.models import ActionState, QuorumStateModel
 
 class MockRedisStore:
     def __init__(self):
@@ -43,8 +43,8 @@ class MockRedisStore:
 @pytest.fixture
 def mock_store(monkeypatch):
     mock = MockRedisStore()
-    monkeypatch.setattr("archon_engine.main.store", mock)
-    monkeypatch.setattr("archon_engine.redis_store.store", mock)
+    monkeypatch.setattr("vergil_engine.main.store", mock)
+    monkeypatch.setattr("vergil_engine.redis_store.store", mock)
     return mock
 
 @pytest.fixture

@@ -27,7 +27,7 @@ Autonomous AI agents are increasingly deployed in high-stakes environments—SOC
 | Feature | Description |
 |---|---|
 | **Confidence-Gated Authorization** | Actions are auto-approved when AI confidence exceeds a tunable threshold. Below that threshold, the system triggers Auth0 Step-Up Authentication to bring a human into the loop. |
-| **Quorum-as-a-Service** | For truly critical operations, Archon requires N-of-M human approvals via parallel Auth0 Step-Up flows, with Redis-backed atomic state tracking. |
+| **Quorum-as-a-Service** | For truly critical operations, Vergil requires N-of-M human approvals via parallel Auth0 Step-Up flows, with Redis-backed atomic state tracking. |
 | **RS256 Token Verification** | All inbound API calls are cryptographically verified against Auth0's JWKS public keys using RS256 — no shared secrets, no forgery. |
 
 ---
@@ -39,14 +39,14 @@ Autonomous AI agents are increasingly deployed in high-stakes environments—SOC
 │   AI Agent / SOC     │        │    Auth0 Tenant       │
 │   (demo_app/)        │        │  ┌────────────────┐   │
 │                      │        │  │ Universal Login │   │
-│  Uses VirgilClient   │        │  │  (Step-Up MFA)  │   │
-│  (archon_sdk/)       │        │  └───────┬────────┘   │
+│  Uses VergilClient    │        │  │  (Step-Up MFA)  │   │
+│  (vergil_sdk/)       │        │  └───────┬────────┘   │
 └──────────┬───────────┘        └──────────┼────────────┘
            │ HTTP                          │ Redirect
            ▼                               ▼
 ┌──────────────────────────────────────────────────────┐
 │              Vergil State Engine                      │
-│              (archon_engine/)                         │
+│              (vergil_engine/)                         │
 │                                                       │
 │  POST /api/v1/actions/execute                         │
 │    → confidence ≥ threshold? AUTO-APPROVE             │
@@ -74,17 +74,22 @@ Autonomous AI agents are increasingly deployed in high-stakes environments—SOC
 ## 📂 Project Structure
 
 ```
-archon-project/
-├── archon_engine/          # FastAPI State Engine (Control Plane)
+vergil-project/
+├── vergil_engine/          # FastAPI State Engine (Control Plane)
 │   ├── main.py             # API endpoints & lifespan management
 │   ├── auth0_utils.py      # RS256 JWT verification & Step-Up URL generation
 │   ├── config.py           # Pydantic Settings (env-driven configuration)
 │   ├── models.py           # Typed request/response DTOs
 │   └── redis_store.py      # Async Redis with optimistic concurrency
 │
-├── archon_sdk/             # Python SDK for AI agents
-│   ├── client.py           # ArchonClient with async polling & backoff
+├── vergil_sdk/             # Python SDK for AI agents
+│   ├── client.py           # VergilClient with async polling & backoff
 │   └── exceptions.py       # Typed exceptions (StepUpAuthRequired, etc.)
+│
+├── dashboard/              # Command Center Web UI
+│   ├── index.html          # Interactive dashboard
+│   ├── dashboard.css       # Premium dark theme
+│   └── dashboard.js        # Real-time event feed & state machine
 │
 ├── demo_app/               # SOC Agent simulation
 │   └── soc_agent.py        # 3-scenario demo (auto → step-up → quorum)
@@ -110,7 +115,7 @@ archon-project/
 ### 1. Install Dependencies
 
 ```bash
-cd archon-project
+cd vergil-project
 pip install -r requirements.txt
 ```
 
@@ -129,7 +134,7 @@ REDIS_URL=redis://localhost:6379
 ### 3. Start the State Engine
 
 ```bash
-uvicorn archon_engine.main:app --reload
+uvicorn vergil_engine.main:app --reload
 ```
 
 The engine starts at `http://localhost:8000` with interactive docs at `/docs`.
@@ -154,8 +159,8 @@ pytest tests/ -v
 
 ### Scenario 1: Low Risk → Auto-Approve
 ```python
-async with ArchonClient() as archon:
-    approved = await archon.execute(
+async with VergilClient() as vergil:
+    approved = await vergil.execute(
         action="Block IP 192.168.1.100",
         confidence=0.95,  # High confidence
         threshold=0.90,   # Meets threshold
@@ -166,7 +171,7 @@ async with ArchonClient() as archon:
 
 ### Scenario 2: High Risk → Step-Up Auth
 ```python
-    approved = await archon.execute(
+    approved = await vergil.execute(
         action="Isolate engineering VLAN",
         confidence=0.75,  # Below threshold
         threshold=0.90,
@@ -177,7 +182,7 @@ async with ArchonClient() as archon:
 
 ### Scenario 3: Critical → Multi-Party Quorum
 ```python
-    approved = await archon.require_quorum(
+    approved = await vergil.require_quorum(
         action="Wipe DB drives and failover",
         trustees=["ciso@co.com", "vp_eng@co.com", "oncall@co.com"],
         required=2  # Need 2-of-3 approvals

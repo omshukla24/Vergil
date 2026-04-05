@@ -3,11 +3,11 @@ import logging
 import asyncio
 from typing import List, Dict, Any, Optional
 
-from archon_sdk.exceptions import ArchonTimeoutError
+from vergil_sdk.exceptions import VergilTimeoutError
 
-logger = logging.getLogger("archon_sdk")
+logger = logging.getLogger("vergil_sdk")
 
-class ArchonClient:
+class VergilClient:
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url.rstrip("/")
         # We set an explicit timeout for overall connection handling to the engine
@@ -46,7 +46,7 @@ class ArchonClient:
                 # Delegate to an asynchronous exponential polling method
                 await self._poll_for_approval(action_id)
                 return True
-            except ArchonTimeoutError:
+            except VergilTimeoutError:
                 logger.error(f"Timed out waiting for Step-Up Auth for {action_id}.")
                 return False
                 
@@ -78,7 +78,7 @@ class ArchonClient:
         try:
             await self._poll_for_approval(action_id)
             return True
-        except ArchonTimeoutError:
+        except VergilTimeoutError:
             logger.error(f"Timed out waiting for Quorum for {action_id}.")
             return False
 
@@ -109,7 +109,7 @@ class ArchonClient:
             if delay < 5.0:
                 delay *= 1.25
                 
-        raise ArchonTimeoutError(f"Action {action_id} approval timed out.")
+        raise VergilTimeoutError(f"Action {action_id} approval timed out.")
 
     async def __aenter__(self):
         return self

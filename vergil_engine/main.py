@@ -8,11 +8,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from archon_engine.models import (
+from vergil_engine.models import (
     ActionRequest, ActionResponse, ActionState, QuorumRequest, QuorumStateModel
 )
-from archon_engine.redis_store import store
-from archon_engine.auth0_utils import generate_step_up_url, generate_quorum_urls, decode_state
+from vergil_engine.redis_store import store
+from vergil_engine.auth0_utils import generate_step_up_url, generate_quorum_urls, decode_state
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("vergil_engine")

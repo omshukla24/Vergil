@@ -1,5 +1,5 @@
 /* ========================================
-   Archon Command Center — Dashboard Logic
+   Vergil Command Center — Dashboard Logic
    ======================================== */
 
 const API_BASE = "http://localhost:8000";
