@@ -15,7 +15,7 @@ from archon_engine.redis_store import store
 from archon_engine.auth0_utils import generate_step_up_url, generate_quorum_urls, decode_state
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logger = logging.getLogger("archon_engine")
+logger = logging.getLogger("vergil_engine")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,8 +28,8 @@ async def lifespan(app: FastAPI):
     await store.disconnect()
 
 app = FastAPI(
-    title="Archon State Engine",
-    description="Control plane for Confidence-Gated AI Authorization via Auth0.",
+    title="Vergil State Engine",
+    description="Confidence-Gated AI Authorization & Quorum-as-a-Service via Auth0.",
     version="1.0.0",
     lifespan=lifespan
 )

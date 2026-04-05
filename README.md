@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
 </p>
 
-<h1 align="center">⚔️ Archon</h1>
+<h1 align="center">⚔️ Vergil</h1>
 <h3 align="center">Agentic Auth Middleware — Confidence-Gated Authorization for Autonomous AI</h3>
 
 <p align="center">
@@ -22,7 +22,7 @@ Autonomous AI agents are increasingly deployed in high-stakes environments—SOC
 
 ## 💡 The Solution
 
-**Archon** introduces a novel authorization paradigm:
+**Vergil** introduces a novel authorization paradigm:
 
 | Feature | Description |
 |---|---|
@@ -39,13 +39,13 @@ Autonomous AI agents are increasingly deployed in high-stakes environments—SOC
 │   AI Agent / SOC     │        │    Auth0 Tenant       │
 │   (demo_app/)        │        │  ┌────────────────┐   │
 │                      │        │  │ Universal Login │   │
-│  Uses ArchonClient   │        │  │  (Step-Up MFA)  │   │
+│  Uses VirgilClient   │        │  │  (Step-Up MFA)  │   │
 │  (archon_sdk/)       │        │  └───────┬────────┘   │
 └──────────┬───────────┘        └──────────┼────────────┘
            │ HTTP                          │ Redirect
            ▼                               ▼
 ┌──────────────────────────────────────────────────────┐
-│              Archon State Engine                      │
+│              Vergil State Engine                      │
 │              (archon_engine/)                         │
 │                                                       │
 │  POST /api/v1/actions/execute                         │
