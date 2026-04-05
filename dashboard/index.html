@@ -3,265 +3,221 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vergil — Agentic Auth Command Center</title>
-    <meta name="description" content="Real-time command center for Vergil Confidence-Gated AI Authorization and Quorum-as-a-Service." />
+    <title>Vergil — Command Center</title>
+    <meta name="description" content="Vergil: Confidence-Gated AI Authorization and Quorum-as-a-Service." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-grid"></div>
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
-    <div class="bg-glow bg-glow-3"></div>
+    <div class="app">
 
-    <!-- Top Navigation -->
-    <header id="main-header">
-        <div class="header-left">
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
-                    <path d="M16 8L22 11.5V18.5L16 22L10 18.5V11.5L16 8Z" fill="url(#logoGrad)" opacity="0.3"/>
-                    <circle cx="16" cy="15" r="3" fill="url(#logoGrad)"/>
-                    <defs>
-                        <linearGradient id="logoGrad" x1="4" y1="2" x2="28" y2="30">
-                            <stop offset="0%" stop-color="#6366f1"/>
-                            <stop offset="100%" stop-color="#a855f7"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <span class="logo-text">VERGIL</span>
-                <span class="logo-badge">v1.0</span>
-            </div>
-        </div>
-        <div class="header-center">
-            <div class="status-indicator" id="engine-status">
-                <span class="status-dot"></span>
-                <span class="status-text">Connecting...</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <button class="btn btn-ghost" id="btn-clear-log" title="Clear Log">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1h2.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
-            </button>
-            <div class="api-url-display" id="api-url">
-                <span class="api-label">Engine</span>
-                <code>localhost:8000</code>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main id="dashboard">
-        <!-- Stats Bar -->
-        <section class="stats-bar" id="stats-bar">
-            <div class="stat-card" id="stat-total">
-                <div class="stat-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" stroke="currentColor" stroke-width="1.5"/></svg>
-                </div>
-                <div class="stat-body">
-                    <span class="stat-value" id="stat-total-val">0</span>
-                    <span class="stat-label">Total Actions</span>
-                </div>
-            </div>
-            <div class="stat-card stat-approved" id="stat-approved">
-                <div class="stat-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/></svg>
-                </div>
-                <div class="stat-body">
-                    <span class="stat-value" id="stat-approved-val">0</span>
-                    <span class="stat-label">Auto-Approved</span>
-                </div>
-            </div>
-            <div class="stat-card stat-pending" id="stat-pending">
-                <div class="stat-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6V10L13 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                </div>
-                <div class="stat-body">
-                    <span class="stat-value" id="stat-pending-val">0</span>
-                    <span class="stat-label">Pending Auth</span>
-                </div>
-            </div>
-            <div class="stat-card stat-quorum" id="stat-quorum">
-                <div class="stat-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="13" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 17C3 14.2 4.8 12 7 12C8 12 9 12.5 10 13C11 12.5 12 12 13 12C15.2 12 17 14.2 17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                </div>
-                <div class="stat-body">
-                    <span class="stat-value" id="stat-quorum-val">0</span>
-                    <span class="stat-label">Quorums</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Two Column Layout -->
-        <div class="dashboard-grid">
-            <!-- Left: Action Controls -->
-            <section class="panel panel-controls" id="panel-controls">
-                <div class="panel-header">
-                    <h2>⚡ Action Console</h2>
-                    <span class="panel-badge">Interactive</span>
-                </div>
-
-                <!-- Scenario Cards -->
-                <div class="scenario-cards">
-                    <div class="scenario-card scenario-low" id="scenario-low" tabindex="0" role="button">
-                        <div class="scenario-header">
-                            <span class="scenario-risk-badge risk-low">LOW RISK</span>
-                            <span class="scenario-confidence">95%</span>
-                        </div>
-                        <h3>Block Malicious IP</h3>
-                        <p>Routine port scan detected. Block source IP 192.168.1.100 at firewall.</p>
-                        <div class="scenario-meta">
-                            <span>Threshold: 90%</span>
-                            <span class="scenario-outcome">→ Auto-Approve</span>
-                        </div>
-                        <div class="scenario-progress"></div>
-                    </div>
-
-                    <div class="scenario-card scenario-high" id="scenario-high" tabindex="0" role="button">
-                        <div class="scenario-header">
-                            <span class="scenario-risk-badge risk-high">HIGH RISK</span>
-                            <span class="scenario-confidence">75%</span>
-                        </div>
-                        <h3>Isolate VLAN</h3>
-                        <p>Lateral movement detected in engineering subnet. Isolate engineering VLAN.</p>
-                        <div class="scenario-meta">
-                            <span>Threshold: 90%</span>
-                            <span class="scenario-outcome">→ Step-Up Auth</span>
-                        </div>
-                        <div class="scenario-progress"></div>
-                    </div>
-
-                    <div class="scenario-card scenario-critical" id="scenario-critical" tabindex="0" role="button">
-                        <div class="scenario-header">
-                            <span class="scenario-risk-badge risk-critical">CRITICAL</span>
-                            <span class="scenario-confidence">N/A</span>
-                        </div>
-                        <h3>Wipe & Failover DB</h3>
-                        <p>Global ransomware detected. Wipe affected drives and failover to standby.</p>
-                        <div class="scenario-meta">
-                            <span>Trustees: 3</span>
-                            <span class="scenario-outcome">→ 2-of-3 Quorum</span>
-                        </div>
-                        <div class="scenario-progress"></div>
-                    </div>
-                </div>
-
-                <!-- Custom Action Form -->
-                <div class="custom-action" id="custom-action">
-                    <h3>Custom Action</h3>
-                    <form id="custom-action-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="input-action">Action</label>
-                                <input type="text" id="input-action" placeholder="e.g. Quarantine endpoint" required />
-                            </div>
-                        </div>
-                        <div class="form-row form-row-2col">
-                            <div class="form-group">
-                                <label for="input-confidence">Confidence</label>
-                                <div class="input-with-slider">
-                                    <input type="range" id="input-confidence-slider" min="0" max="100" value="50" />
-                                    <span class="slider-value" id="confidence-display">0.50</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="input-threshold">Threshold</label>
-                                <div class="input-with-slider">
-                                    <input type="range" id="input-threshold-slider" min="0" max="100" value="90" />
-                                    <span class="slider-value" id="threshold-display">0.90</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="input-user">User ID</label>
-                                <input type="text" id="input-user" placeholder="soc_admin@company.com" value="soc_admin@company.com" />
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="btn-execute">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
-                            Execute Action
-                        </button>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Right: Live Feed -->
-            <section class="panel panel-feed" id="panel-feed">
-                <div class="panel-header">
-                    <h2>📡 Live Event Feed</h2>
-                    <div class="feed-controls">
-                        <span class="feed-count" id="feed-count">0 events</span>
-                    </div>
-                </div>
-                <div class="feed-container" id="feed-container">
-                    <div class="feed-empty" id="feed-empty">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" opacity="0.3">
-                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/>
-                            <path d="M24 14V28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="24" cy="34" r="2" fill="currentColor"/>
+        <!-- Nav -->
+        <nav class="nav" id="nav">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <div class="nav-logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 19.5h20L12 2z" fill="#EDEDED"/>
+                            <path d="M12 8l-5 9.5h10L12 8z" fill="#0A0A0A"/>
                         </svg>
-                        <p>No events yet. Click a scenario card or execute a custom action.</p>
                     </div>
+                    <span class="nav-logo-text">Vergil</span>
+                </a>
+                <div class="nav-separator"></div>
+                <span class="nav-subtitle">Command Center</span>
+            </div>
+            <div class="nav-right">
+                <div class="nav-status" id="engineStatus">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting...</span>
                 </div>
-            </section>
-        </div>
+                <button class="btn btn-icon btn-secondary" onclick="clearFeed()" title="Clear events">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+                <span class="nav-endpoint" id="navEndpoint">localhost:8000</span>
+            </div>
+        </nav>
 
-        <!-- State Machine Visualization -->
-        <section class="panel panel-state-machine" id="panel-state-machine">
-            <div class="panel-header">
-                <h2>🔄 Authorization State Machine</h2>
-                <span class="panel-badge">Real-Time</span>
-            </div>
-            <div class="state-machine-viz">
-                <div class="state-node" id="sm-idle">
-                    <span class="state-dot"></span>
-                    <span>IDLE</span>
+        <!-- Main -->
+        <main class="main">
+
+            <!-- Metrics -->
+            <div class="metrics" id="metrics">
+                <div class="metric">
+                    <span class="metric-value" id="metricTotal">0</span>
+                    <span class="metric-label">Total Actions</span>
                 </div>
-                <div class="state-arrow" id="sm-arrow-1">
-                    <svg width="60" height="24" viewBox="0 0 60 24"><path d="M0 12H50M50 12L44 6M50 12L44 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                    <span class="arrow-label">execute()</span>
+                <div class="metric">
+                    <span class="metric-value" id="metricApproved">0</span>
+                    <span class="metric-label">Auto-Approved</span>
                 </div>
-                <div class="state-node state-decision" id="sm-gate">
-                    <span class="state-dot"></span>
-                    <span>CONFIDENCE GATE</span>
+                <div class="metric">
+                    <span class="metric-value" id="metricPending">0</span>
+                    <span class="metric-label">Pending Auth</span>
                 </div>
-                <div class="state-branch">
-                    <div class="branch-path branch-auto">
-                        <div class="state-arrow state-arrow-up" id="sm-arrow-auto">
-                            <svg width="60" height="24" viewBox="0 0 60 24"><path d="M0 12H50M50 12L44 6M50 12L44 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                            <span class="arrow-label arrow-label-success">conf ≥ thresh</span>
-                        </div>
-                        <div class="state-node state-success" id="sm-executable">
-                            <span class="state-dot"></span>
-                            <span>EXECUTABLE</span>
-                        </div>
-                    </div>
-                    <div class="branch-path branch-auth">
-                        <div class="state-arrow state-arrow-down" id="sm-arrow-auth">
-                            <svg width="60" height="24" viewBox="0 0 60 24"><path d="M0 12H50M50 12L44 6M50 12L44 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                            <span class="arrow-label arrow-label-warning">conf &lt; thresh</span>
-                        </div>
-                        <div class="state-node state-pending" id="sm-pending">
-                            <span class="state-dot"></span>
-                            <span>PENDING</span>
-                        </div>
-                        <div class="state-arrow" id="sm-arrow-approve">
-                            <svg width="60" height="24" viewBox="0 0 60 24"><path d="M0 12H50M50 12L44 6M50 12L44 18" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                            <span class="arrow-label">Auth0 callback</span>
-                        </div>
-                        <div class="state-node state-approved" id="sm-approved">
-                            <span class="state-dot"></span>
-                            <span>APPROVED</span>
-                        </div>
-                    </div>
+                <div class="metric">
+                    <span class="metric-value" id="metricQuorums">0</span>
+                    <span class="metric-label">Quorums</span>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <!-- Content Grid -->
+            <div class="content">
+
+                <!-- Action Console -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">Scenarios</span>
+                        <span class="section-badge">Interactive</span>
+                    </div>
+                    <div class="section-body">
+                        <!-- Low Risk -->
+                        <div class="scenario" id="scenarioLow" onclick="executeScenario('low')">
+                            <div class="scenario-left">
+                                <span class="scenario-tag low">Low Risk</span>
+                                <span class="scenario-name">Block Malicious IP</span>
+                                <span class="scenario-desc">Routine port scan — block source at firewall</span>
+                            </div>
+                            <div class="scenario-right">
+                                <span class="scenario-confidence">0.95</span>
+                                <span class="scenario-action-label">
+                                    Auto-Approve
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- High Risk -->
+                        <div class="scenario" id="scenarioHigh" onclick="executeScenario('high')">
+                            <div class="scenario-left">
+                                <span class="scenario-tag high">High Risk</span>
+                                <span class="scenario-name">Isolate VLAN</span>
+                                <span class="scenario-desc">Lateral movement detected — isolate VLAN segment</span>
+                            </div>
+                            <div class="scenario-right">
+                                <span class="scenario-confidence">0.75</span>
+                                <span class="scenario-action-label">
+                                    Step-Up Auth
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Critical -->
+                        <div class="scenario" id="scenarioCritical" onclick="executeScenario('critical')">
+                            <div class="scenario-left">
+                                <span class="scenario-tag critical">Critical</span>
+                                <span class="scenario-name">Wipe & Failover DB</span>
+                                <span class="scenario-desc">Global ransomware — wipe and failover to standby</span>
+                            </div>
+                            <div class="scenario-right">
+                                <span class="scenario-confidence">N/A</span>
+                                <span class="scenario-action-label">
+                                    2-of-3 Quorum
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Feed -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">Event Feed</span>
+                        <span class="section-badge" id="feedCount">0 events</span>
+                    </div>
+                    <div class="section-body feed" id="feed">
+                        <div class="feed-empty" id="feedEmpty">
+                            <div class="feed-empty-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            </div>
+                            No events yet. Click a scenario to begin.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Custom Action -->
+            <div class="custom-section">
+                <div class="custom-header">Custom Action</div>
+                <div class="custom-form">
+                    <div class="form-group">
+                        <label class="form-label">Action</label>
+                        <input class="form-input" id="customAction" type="text" placeholder="e.g. Quarantine endpoint" />
+                    </div>
+                    <div class="form-group slider-group">
+                        <div class="slider-header">
+                            <label class="form-label">Confidence</label>
+                            <span class="slider-value" id="confValue">0.50</span>
+                        </div>
+                        <input type="range" id="confSlider" min="0" max="1" step="0.01" value="0.50" oninput="document.getElementById('confValue').textContent = this.value" />
+                    </div>
+                    <div class="form-group slider-group">
+                        <div class="slider-header">
+                            <label class="form-label">Threshold</label>
+                            <span class="slider-value" id="threshValue">0.90</span>
+                        </div>
+                        <input type="range" id="threshSlider" min="0" max="1" step="0.01" value="0.90" oninput="document.getElementById('threshValue').textContent = this.value" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">User</label>
+                        <input class="form-input" id="customUser" type="text" value="soc_admin@company.com" />
+                    </div>
+                    <button class="btn btn-primary" onclick="executeCustom()">Execute</button>
+                </div>
+            </div>
+
+            <!-- State Machine -->
+            <div class="state-machine">
+                <div class="section-header">
+                    <span class="section-title">Authorization State Machine</span>
+                    <span class="section-badge">Live</span>
+                </div>
+                <div class="state-flow">
+                    <div class="state-node active" id="stateIdle">IDLE</div>
+                    <div class="state-arrow">
+                        <div class="state-arrow-line"></div>
+                        <span class="state-arrow-label">execute()</span>
+                    </div>
+                    <div class="state-node" id="stateGate">CONFIDENCE GATE</div>
+                    <div class="state-arrow">
+                        <div class="state-arrow-line"></div>
+                    </div>
+                    <div class="state-branch">
+                        <div class="state-branch-row">
+                            <div class="state-arrow">
+                                <span class="state-arrow-label">conf ≥ thresh</span>
+                                <div class="state-arrow-line"></div>
+                            </div>
+                            <div class="state-node" id="stateExec">EXECUTABLE</div>
+                        </div>
+                        <div class="state-branch-row">
+                            <div class="state-arrow">
+                                <span class="state-arrow-label">conf &lt; thresh</span>
+                                <div class="state-arrow-line"></div>
+                            </div>
+                            <div class="state-node" id="statePend">PENDING</div>
+                            <div class="state-arrow">
+                                <div class="state-arrow-line"></div>
+                                <span class="state-arrow-label">callback</span>
+                            </div>
+                            <div class="state-node" id="stateApproved">APPROVED</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>Vergil v1.0 · Confidence-Gated Authorization</span>
+            <span>Built for <a href="https://auth0.com" target="_blank">Auth0</a> AI Security Hackathon</span>
+        </footer>
+    </div>
 
     <script src="dashboard.js"></script>
 </body>
