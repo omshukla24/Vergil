@@ -223,13 +223,7 @@ MIT
 
 ---
 
-<p align="center">
-  Built for the <strong>Auth0 AI Security Hackathon</strong> by <a href="https://github.com/omshukla24">@omshukla24</a>
-</p>
-
----
-
-### 🧪 Reviewer Testing Credentials
+### 🧪 Test Credentials
 To properly test the Step-Up Auth mechanism, when prompted by the Auth0 Universal Login, please use:
 - **Email:** `reviewer@company.com`
 - **Password:** `Vergil@storm1`
