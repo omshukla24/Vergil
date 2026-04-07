@@ -232,4 +232,4 @@ MIT
 ### 🧪 Reviewer Testing Credentials
 To properly test the Step-Up Auth mechanism, when prompted by the Auth0 Universal Login, please use:
 - **Email:** `reviewer@company.com`
-- **Password:** `VergilDemo2026!`
+- **Password:** `Vergil@storm1`
