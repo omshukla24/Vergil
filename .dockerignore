@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+*.log
+.git/
+.pytest_cache/
+tests/
+frontend/
+node_modules/
+*.ps1
+repair_html.py

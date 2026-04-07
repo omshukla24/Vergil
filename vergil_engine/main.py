@@ -141,7 +141,7 @@ async def auth0_callback(code: str = None, state: str = None, error: str = None,
     """
     if error:
         logger.error(f"Auth0 Error: {error} - {error_description}")
-        return f"<h1>Authentication Failed</h1><p>{error_description}</p>"
+        return HTMLResponse("<script>window.close();</script>")
         
     if not state:
         raise HTTPException(status_code=400, detail="Missing state parameter")
@@ -161,8 +161,8 @@ async def auth0_callback(code: str = None, state: str = None, error: str = None,
         if updated_quorum:
             if updated_quorum.status == ActionState.EXECUTABLE:
                 logger.info(f"Quorum {action_id} met its required threshold and is EXECUTABLE.")
-                return f"<h1>Quorum Complete</h1><p>Thank you {user_id}. Agent is authorized.</p>"
-            return f"<h1>Approval Registered</h1><p>Thank you {user_id}. {updated_quorum.current_approvals} out of {updated_quorum.required_approvals} received.</p>"
+                return HTMLResponse("<script>window.close();</script>")
+            return HTMLResponse("<script>window.close();</script>")
             
     # Process Standard Response
     state_val = await store.get_action_state(action_id)
@@ -171,6 +171,6 @@ async def auth0_callback(code: str = None, state: str = None, error: str = None,
         # to acquire a Step-Up enhanced Access Token. For architectural sim, we assume verification and upgrade state.
         await store.set_action_state(action_id, ActionState.APPROVED)
         logger.info(f"Action {action_id} approved via Step-Up Auth by {user_id}")
-        return f"<h1>Action Approved</h1><p>Agent Step-Up Verification successful. Agent may proceed.</p>"
+        return HTMLResponse("<script>window.close();</script>")
         
-    return f"<h1>Error</h1><p>Action {action_id} not found, already executed, or expired.</p>"
+    return HTMLResponse("<script>window.close();</script>")

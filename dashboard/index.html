@@ -1,224 +1,2354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vergil — Command Center</title>
-    <meta name="description" content="Vergil: Confidence-Gated AI Authorization and Quorum-as-a-Service." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="dashboard.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vergil — Zero-Trust Authorization Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:#05050A;color:#F0F0F5;font-family:'Inter',-apple-system,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+:root{
+  --bg:#05050A;--bg2:rgba(255,255,255,0.025);--bg3:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --t1:#F0F0F5;--t2:#9090A8;--t3:#50505E;--t4:#282830;
+  --c1:#3ECF8E;--c1a:rgba(62,207,142,0.08);--c1b:rgba(62,207,142,0.18);
+  --c2:#F59E0B;--c2a:rgba(245,158,11,0.08);--c2b:rgba(245,158,11,0.18);
+  --c3:#8B5CF6;--c3a:rgba(139,92,246,0.08);--c3b:rgba(139,92,246,0.18);
+  --c4:#FF3D00;--c4a:rgba(255,61,0,0.08);--c4b:rgba(255,61,0,0.2);
+  --mono:'JetBrains Mono','Courier New',monospace;
+  --r:8px;--rl:12px;--rxl:16px;
+  --sw:240px;--th:56px;
+}
+
+/* ── BACKGROUND ── */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);animation:orbFloat linear infinite;}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(62,207,142,0.18),transparent 70%);top:-200px;left:-150px;animation-duration:28s;}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.14),transparent 70%);bottom:-200px;right:-100px;animation-duration:35s;animation-delay:-12s;}
+.orb3{width:400px;height:400px;background:radial-gradient(circle,rgba(255,61,0,0.10),transparent 70%);top:40%;right:20%;animation-duration:22s;animation-delay:-6s;}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:52px 52px;}
+.noise{position:absolute;inset:0;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px;}
+
+@keyframes orbFloat{
+  0%{transform:translate(0,0) scale(1);}
+  25%{transform:translate(40px,-30px) scale(1.06);}
+  50%{transform:translate(-25px,40px) scale(0.94);}
+  75%{transform:translate(30px,25px) scale(1.04);}
+  100%{transform:translate(0,0) scale(1);}
+}
+
+/* ── APP ── */
+.app{position:relative;z-index:1;display:flex;height:100vh;width:100vw;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sw);min-width:var(--sw);height:100%;flex-shrink:0;
+  background:rgba(5,5,12,0.90);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:20;
+}
+.slogo{height:var(--th);padding:0 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;cursor:pointer;}
+.slogo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--c1),rgba(62,207,142,0.4));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px rgba(62,207,142,0.25);}
+.slogo-icon svg{width:16px;height:16px;fill:none;stroke:#050A0A;stroke-width:2.5;}
+.slogo-text{font-size:15px;font-weight:800;letter-spacing:-0.04em;color:var(--t1);}
+.slogo-ver{margin-left:auto;font-size:9px;font-family:var(--mono);color:var(--c4);background:var(--c4a);border:1px solid var(--c4b);padding:2px 6px;border-radius:4px;letter-spacing:0.06em;}
+
+.snav{flex:1;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;}
+.snav::-webkit-scrollbar{display:none;}
+.nlabel{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--t4);padding:10px 10px 5px;}
+.ni{
+  display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:var(--r);
+  cursor:pointer;color:var(--t3);font-size:13.5px;font-weight:400;
+  border:1px solid transparent;user-select:none;position:relative;
+  transition:color 0.15s,background 0.15s,border-color 0.15s;
+}
+.ni:hover{background:rgba(255,255,255,0.04);color:var(--t2);}
+.ni.active{background:rgba(255,255,255,0.06);color:var(--t1);border-color:var(--border);}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:0.5;transition:opacity 0.15s;}
+.ni:hover svg,.ni.active svg{opacity:1;}
+.ni .nbadge{margin-left:auto;font-size:9px;font-family:var(--mono);font-weight:700;padding:2px 7px;border-radius:10px;background:var(--c4a);color:var(--c4);border:1px solid var(--c4b);}
+.ni.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--c1);border-radius:1px;box-shadow:0 0 8px var(--c1);}
+
+.sfooter{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0;}
+.eng-status{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--t3);}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--c1);box-shadow:0 0 8px var(--c1);animation:pdot 2.4s ease-in-out infinite;flex-shrink:0;}
+@keyframes pdot{0%,100%{opacity:1;box-shadow:0 0 8px var(--c1);}50%{opacity:0.3;box-shadow:0 0 2px var(--c1);}}
+.pdot.offline{background:#EF4444;box-shadow:0 0 8px #EF4444;animation:none;}
+
+/* ── MAIN ── */
+.main{flex:1;height:100%;overflow:hidden;display:flex;flex-direction:column;min-width:0;}
+
+/* ── TOPBAR ── */
+.topbar{
+  height:var(--th);border-bottom:1px solid var(--border);flex-shrink:0;
+  background:rgba(5,5,10,0.80);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  display:flex;align-items:center;padding:0 28px;gap:12px;
+}
+.tb-left{flex:1;display:flex;align-items:center;gap:10px;min-width:0;}
+.tb-title{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;}
+.tb-sep{width:1px;height:14px;background:var(--border2);}
+.tb-crumb{font-size:12px;color:var(--t3);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-clock{font-family:var(--mono);font-size:11px;color:var(--t4);letter-spacing:0.05em;}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:100px;border:1px solid var(--border2);font-size:11.5px;font-weight:500;color:var(--t3);background:rgba(255,255,255,0.03);cursor:default;}
+.chip .cdot{width:5px;height:5px;border-radius:50%;background:var(--c1);box-shadow:0 0 6px var(--c1);}
+
+/* ── PAGES ── */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;padding:32px 36px 64px;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity 0.32s cubic-bezier(0.16,1,0.3,1),transform 0.32s cubic-bezier(0.16,1,0.3,1);}
+.page.active{opacity:1;transform:translateY(0);pointer-events:all;}
+.page::-webkit-scrollbar{width:4px;}
+.page::-webkit-scrollbar-track{background:transparent;}
+.page::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+
+/* ── ENTRANCE ANIMATION ── */
+.ae{opacity:0;transform:translateY(18px);}
+.ae.in{animation:slideUp 0.45s cubic-bezier(0.16,1,0.3,1) forwards;}
+@keyframes slideUp{to{opacity:1;transform:translateY(0);}}
+.d1{animation-delay:0.05s;}.d2{animation-delay:0.1s;}.d3{animation-delay:0.15s;}
+.d4{animation-delay:0.2s;}.d5{animation-delay:0.25s;}.d6{animation-delay:0.3s;}
+.d7{animation-delay:0.35s;}.d8{animation-delay:0.4s;}.d9{animation-delay:0.45s;}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+.ph-l .pt{font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--t1);line-height:1.1;}
+.ph-l .pd{font-size:13px;color:var(--t3);margin-top:5px;}
+.ph-r{display:flex;align-items:center;gap:8px;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:500;
+  cursor:pointer;border:none;outline:none;font-family:inherit;line-height:1;
+  white-space:nowrap;position:relative;overflow:hidden;
+  transition:all 0.18s ease;
+}
+.btn:disabled{opacity:0.45;cursor:not-allowed;}
+.btn svg{width:14px;height:14px;flex-shrink:0;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-lg{padding:11px 22px;font-size:14px;}
+.btn-fw{width:100%;}
+
+.btn-primary{background:#EFEFEF;color:#080810;}
+.btn-primary:not(:disabled):hover{background:#fff;box-shadow:0 0 20px rgba(255,255,255,0.15);}
+.btn-secondary{background:transparent;color:var(--t2);border:1px solid var(--border2);}
+.btn-secondary:not(:disabled):hover{background:rgba(255,255,255,0.05);color:var(--t1);border-color:var(--border3);}
+.btn-ghost{background:transparent;color:var(--t3);border:1px solid transparent;}
+.btn-ghost:not(:disabled):hover{background:rgba(255,255,255,0.04);color:var(--t1);}
+.btn-t1{background:var(--c1a);color:var(--c1);border:1px solid var(--c1b);}
+.btn-t1:not(:disabled):hover{background:rgba(62,207,142,0.14);box-shadow:0 0 16px rgba(62,207,142,0.15);}
+.btn-t2{background:var(--c2a);color:var(--c2);border:1px solid var(--c2b);}
+.btn-t2:not(:disabled):hover{background:rgba(245,158,11,0.14);box-shadow:0 0 16px rgba(245,158,11,0.15);}
+.btn-t3{background:var(--c3a);color:var(--c3);border:1px solid var(--c3b);}
+.btn-t3:not(:disabled):hover{background:rgba(139,92,246,0.14);box-shadow:0 0 16px rgba(139,92,246,0.15);}
+.btn-t4{background:var(--c4a);color:var(--c4);border:1px solid var(--c4b);}
+.btn-t4:not(:disabled):hover{background:rgba(255,61,0,0.14);box-shadow:0 0 16px rgba(255,61,0,0.2);}
+.btn-danger{background:rgba(239,68,68,0.08);color:#EF4444;border:1px solid rgba(239,68,68,0.2);}
+.btn-danger:not(:disabled):hover{background:rgba(239,68,68,0.14);box-shadow:0 0 16px rgba(239,68,68,0.2);}
+
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.12);transform:scale(0);animation:rippleAnim 0.55s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(3.5);opacity:0;}}
+
+/* ── GLASS CARD ── */
+.gc{
+  background:var(--bg2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border);border-radius:var(--rxl);position:relative;overflow:hidden;
+  transition:border-color 0.22s,box-shadow 0.22s,transform 0.22s;
+}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);opacity:0;transition:opacity 0.22s;}
+.gc:hover{border-color:var(--border2);box-shadow:0 8px 40px rgba(0,0,0,0.35);transform:translateY(-1px);}
+.gc:hover::before{opacity:1;}
+
+.gc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.gc-title{font-size:13px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;}
+.gc-meta{font-size:11.5px;color:var(--t3);}
+.gc-body{padding:18px 20px;}
+.gc-body-flush{}
+
+/* ── METRIC CARDS ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.mc{
+  padding:22px 24px;border-radius:var(--rxl);position:relative;overflow:hidden;
+  transition:transform 0.22s,box-shadow 0.22s,border-color 0.22s;
+  background:var(--bg2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border);cursor:default;
+}
+.mc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--rxl) var(--rxl) 0 0;opacity:0;transition:opacity 0.22s;}
+.mc:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+.mc:hover::after{opacity:1;}
+.mc1{border-color:var(--c1b);}
+.mc1::after{background:linear-gradient(90deg,transparent,var(--c1),transparent);}
+.mc1:hover{box-shadow:0 12px 40px rgba(62,207,142,0.08);}
+.mc2{border-color:var(--c2b);}
+.mc2::after{background:linear-gradient(90deg,transparent,var(--c2),transparent);}
+.mc2:hover{box-shadow:0 12px 40px rgba(245,158,11,0.08);}
+.mc3{border-color:var(--c3b);}
+.mc3::after{background:linear-gradient(90deg,transparent,var(--c3),transparent);}
+.mc3:hover{box-shadow:0 12px 40px rgba(139,92,246,0.08);}
+.mc4{border-color:var(--c4b);}
+.mc4::after{background:linear-gradient(90deg,transparent,var(--c4),transparent);}
+.mc4:hover{box-shadow:0 12px 40px rgba(255,61,0,0.08);}
+
+.mc-dot{position:absolute;top:18px;right:18px;width:8px;height:8px;border-radius:50%;}
+.mc1 .mc-dot{background:var(--c1);box-shadow:0 0 10px var(--c1);}
+.mc2 .mc-dot{background:var(--c2);box-shadow:0 0 10px var(--c2);}
+.mc3 .mc-dot{background:var(--c3);box-shadow:0 0 10px var(--c3);}
+.mc4 .mc-dot{background:var(--c4);box-shadow:0 0 10px var(--c4);}
+.mc-label{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:0.03em;text-transform:uppercase;margin-bottom:10px;}
+.mc-val{font-size:38px;font-weight:800;letter-spacing:-0.05em;color:var(--t1);line-height:1;font-variant-numeric:tabular-nums;margin-bottom:6px;}
+.mc-sub{font-size:10.5px;color:var(--t4);font-family:var(--mono);}
+
+/* ── OVERVIEW GRID ── */
+.ov-grid{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:16px;}
+.ov-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.ov-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
+
+/* ── HERO BANNER ── */
+.hero{
+  background:linear-gradient(135deg,rgba(62,207,142,0.06) 0%,rgba(139,92,246,0.06) 100%);
+  border:1px solid rgba(255,255,255,0.07);border-radius:var(--rxl);
+  padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 60%,rgba(62,207,142,0.04));
+}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--c1);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--c1);}
+.hero-title{font-size:28px;font-weight:800;letter-spacing:-0.05em;color:var(--t1);line-height:1.1;margin-bottom:8px;}
+.hero-title span{background:linear-gradient(90deg,var(--c1),var(--c3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:13.5px;color:var(--t3);max-width:520px;line-height:1.6;}
+.hero-actions{display:flex;align-items:center;gap:10px;margin-top:20px;}
+.hero-stat{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3);margin-left:16px;}
+.hero-stat strong{color:var(--t1);font-weight:600;}
+
+/* ── EVENT ITEMS ── */
+.ev-item{
+  display:flex;align-items:flex-start;gap:14px;padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;cursor:default;
+  animation:evSlideIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes evSlideIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+.ev-item:hover{background:rgba(255,255,255,0.02);}
+.ev-item:last-child{border-bottom:none;}
+.ev-tier{width:3px;align-self:stretch;border-radius:2px;flex-shrink:0;margin-top:2px;}
+.ev-t1{background:var(--c1);box-shadow:0 0 8px rgba(62,207,142,0.4);}
+.ev-t2{background:var(--c2);box-shadow:0 0 8px rgba(245,158,11,0.4);}
+.ev-t3{background:var(--c3);box-shadow:0 0 8px rgba(139,92,246,0.4);}
+.ev-t4{background:var(--c4);box-shadow:0 0 8px rgba(255,61,0,0.4);}
+.ev-body{flex:1;min-width:0;}
+.ev-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.ev-action{font-size:13px;font-weight:500;color:var(--t1);font-family:var(--mono);}
+.ev-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);}
+.ev-conf{font-family:var(--mono);font-size:10.5px;color:var(--t4);}
+.ev-time{font-family:var(--mono);font-size:10px;color:var(--t4);flex-shrink:0;margin-top:2px;}
+
+/* ── BADGES ── */
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:0.04em;font-family:var(--mono);}
+.bdg .bd{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.bt1{background:var(--c1a);color:var(--c1);border:1px solid var(--c1b);}
+.bt2{background:var(--c2a);color:var(--c2);border:1px solid var(--c2b);}
+.bt3{background:var(--c3a);color:var(--c3);border:1px solid var(--c3b);}
+.bt4{background:var(--c4a);color:var(--c4);border:1px solid var(--c4b);animation:bt4p 2s ease-in-out infinite;}
+.bok{background:rgba(62,207,142,0.08);color:var(--c1);border:1px solid var(--c1b);}
+.bpnd{background:rgba(245,158,11,0.08);color:var(--c2);border:1px solid var(--c2b);}
+.bapv{background:rgba(139,92,246,0.08);color:var(--c3);border:1px solid var(--c3b);}
+.brej{background:rgba(239,68,68,0.08);color:#EF4444;border:1px solid rgba(239,68,68,0.2);}
+@keyframes bt4p{0%,100%{box-shadow:0 0 0 0 rgba(255,61,0,0.3);}50%{box-shadow:0 0 0 4px rgba(255,61,0,0);}}
+
+/* ── PROGRESS BAR ── */
+.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:4px;}
+.pbar-fill{height:100%;border-radius:2px;transition:width 0.6s cubic-bezier(0.16,1,0.3,1);}
+
+/* ── STATE MACHINE ── */
+.sm-wrap{padding:20px;}
+.sm-row{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:16px;}
+.sm-node{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 16px;border-radius:var(--rl);border:1px solid var(--border);
+  background:rgba(255,255,255,0.025);min-width:100px;text-align:center;
+  transition:all 0.3s ease;cursor:default;
+}
+.sm-node.active{border-color:var(--c1b);background:var(--c1a);box-shadow:0 0 20px rgba(62,207,142,0.12);}
+.sm-node.active .sm-dot{background:var(--c1);box-shadow:0 0 8px var(--c1);}
+.sm-node.state-t2.active{border-color:var(--c2b);background:var(--c2a);box-shadow:0 0 20px rgba(245,158,11,0.12);}
+.sm-node.state-t2.active .sm-dot{background:var(--c2);box-shadow:0 0 8px var(--c2);}
+.sm-node.state-t3.active{border-color:var(--c3b);background:var(--c3a);box-shadow:0 0 20px rgba(139,92,246,0.12);}
+.sm-node.state-t3.active .sm-dot{background:var(--c3);box-shadow:0 0 8px var(--c3);}
+.sm-node.state-t4.active{border-color:var(--c4b);background:var(--c4a);box-shadow:0 0 20px rgba(255,61,0,0.18);}
+.sm-node.state-t4.active .sm-dot{background:var(--c4);box-shadow:0 0 8px var(--c4);}
+.sm-dot{width:8px;height:8px;border-radius:50%;background:var(--t4);transition:all 0.3s;}
+.sm-label{font-size:10.5px;font-family:var(--mono);color:var(--t3);font-weight:500;}
+.sm-node.active .sm-label{color:var(--t1);}
+.sm-arrow{display:flex;align-items:center;padding:0 4px;color:var(--t4);}
+.sm-arrow svg{width:14px;height:14px;}
+
+/* ── QUICK ACTIONS ── */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px;}
+.qa-btn{
+  display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:var(--rl);
+  border:1px solid var(--border);background:rgba(255,255,255,0.02);cursor:pointer;
+  transition:all 0.2s;text-align:left;
+}
+.qa-btn:hover{border-color:var(--border2);background:rgba(255,255,255,0.04);transform:translateY(-1px);}
+.qa-btn.t1:hover{border-color:var(--c1b);background:var(--c1a);}
+.qa-btn.t2:hover{border-color:var(--c2b);background:var(--c2a);}
+.qa-btn.t3:hover{border-color:var(--c3b);background:var(--c3a);}
+.qa-btn.t4:hover{border-color:var(--c4b);background:var(--c4a);}
+.qa-tier{font-size:9.5px;font-family:var(--mono);font-weight:700;letter-spacing:0.06em;margin-bottom:2px;}
+.qa-btn.t1 .qa-tier{color:var(--c1);}
+.qa-btn.t2 .qa-tier{color:var(--c2);}
+.qa-btn.t3 .qa-tier{color:var(--c3);}
+.qa-btn.t4 .qa-tier{color:var(--c4);}
+.qa-name{font-size:12.5px;font-weight:600;color:var(--t1);}
+.qa-desc{font-size:11px;color:var(--t3);}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;padding:6px;background:rgba(255,255,255,0.03);border-radius:var(--r);width:fit-content;}
+.tab{padding:6px 14px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(--t3);cursor:pointer;transition:all 0.15s;border:1px solid transparent;}
+.tab.active{background:rgba(255,255,255,0.07);color:var(--t1);border-color:var(--border);}
+.tab:hover:not(.active){color:var(--t2);}
+
+/* ── SEARCH ── */
+.search-wrap{position:relative;}
+.search-wrap input{
+  width:100%;padding:9px 14px 9px 38px;border-radius:var(--r);
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--t1);
+  font-size:13px;font-family:inherit;outline:none;transition:border-color 0.15s;
+}
+.search-wrap input:focus{border-color:var(--border3);}
+.search-wrap input::placeholder{color:var(--t4);}
+.search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--t4);pointer-events:none;}
+
+/* ── SCENARIOS ── */
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.sc-card{
+  padding:24px;border-radius:var(--rxl);border:1px solid var(--border);
+  background:var(--bg2);backdrop-filter:blur(16px);position:relative;overflow:hidden;
+  transition:all 0.25s;
+}
+.sc-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;}
+.sc-card.t1::before{background:linear-gradient(90deg,transparent,var(--c1),transparent);}
+.sc-card.t2::before{background:linear-gradient(90deg,transparent,var(--c2),transparent);}
+.sc-card.t3::before{background:linear-gradient(90deg,transparent,var(--c3),transparent);}
+.sc-card.t4::before{background:linear-gradient(90deg,transparent,var(--c4),transparent);}
+.sc-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 16px 48px rgba(0,0,0,0.4);}
+.sc-card.t1:hover{box-shadow:0 16px 48px rgba(62,207,142,0.06);}
+.sc-card.t2:hover{box-shadow:0 16px 48px rgba(245,158,11,0.06);}
+.sc-card.t3:hover{box-shadow:0 16px 48px rgba(139,92,246,0.06);}
+.sc-card.t4:hover{box-shadow:0 16px 48px rgba(255,61,0,0.08);}
+.sc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.sc-title{font-size:15px;font-weight:700;color:var(--t1);letter-spacing:-0.02em;margin-top:8px;}
+.sc-desc{font-size:12.5px;color:var(--t3);line-height:1.6;margin-bottom:16px;}
+.sc-conf{margin-bottom:16px;}
+.sc-conf-label{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px;}
+.sc-conf-val{font-family:var(--mono);color:var(--t1);}
+.sc-footer{display:flex;align-items:center;justify-content:space-between;}
+.sc-last{font-size:10.5px;color:var(--t4);font-family:var(--mono);}
+
+/* ── TERMINAL ── */
+.terminal{
+  background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:var(--rl);
+  padding:16px 20px;font-family:var(--mono);font-size:12px;min-height:160px;max-height:280px;
+  overflow-y:auto;color:var(--t2);line-height:1.7;
+}
+.terminal::-webkit-scrollbar{width:3px;}
+.terminal::-webkit-scrollbar-thumb{background:var(--border2);}
+.term-line{margin-bottom:2px;}
+.term-prompt{color:var(--c1);}
+.term-ok{color:var(--c1);}
+.term-warn{color:var(--c2);}
+.term-err{color:var(--c4);}
+.term-info{color:var(--c3);}
+.term-dim{color:var(--t4);}
+.term-cursor{display:inline-block;width:7px;height:13px;background:var(--c1);vertical-align:text-bottom;animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* ── QUORUM CARDS ── */
+.qc{padding:20px;border-radius:var(--rxl);border:1px solid var(--c3b);background:rgba(139,92,246,0.04);margin-bottom:14px;transition:all 0.22s;}
+.qc:hover{border-color:var(--c3);box-shadow:0 8px 32px rgba(139,92,246,0.1);}
+.qc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.qc-id{font-size:11px;font-family:var(--mono);color:var(--c3);}
+.qc-action{font-size:14px;font-weight:600;color:var(--t1);margin-top:3px;}
+.qc-trustees{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.qt{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:var(--r);background:rgba(255,255,255,0.025);border:1px solid var(--border);}
+.qt-info{display:flex;align-items:center;gap:10px;}
+.qt-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.qt-name{font-size:12.5px;color:var(--t1);}
+.qt-role{font-size:10.5px;color:var(--t3);}
+.qt.approved{border-color:var(--c1b);background:var(--c1a);}
+.qt.approved .qt-name{color:var(--c1);}
+
+/* ── ARCH DIAGRAM ── */
+.arch-flow{display:flex;align-items:center;justify-content:center;gap:0;padding:28px 20px;overflow-x:auto;}
+.af-node{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:16px 20px;border-radius:var(--rl);border:1px solid var(--border);
+  background:rgba(255,255,255,0.025);min-width:110px;text-align:center;
+  backdrop-filter:blur(8px);flex-shrink:0;transition:all 0.22s;
+}
+.af-node:hover{border-color:var(--border3);transform:translateY(-2px);}
+.af-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;}
+.af-label{font-size:11.5px;font-weight:600;color:var(--t1);}
+.af-sub{font-size:10px;color:var(--t3);font-family:var(--mono);}
+.af-arrow{color:var(--t4);padding:0 8px;font-size:18px;flex-shrink:0;}
+.af-split{display:flex;flex-direction:column;gap:10px;}
+.af-split .af-node{min-width:100px;}
+
+/* ── TECH STACK ── */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.tech-card{
+  padding:20px;border-radius:var(--rl);border:1px solid var(--border);
+  background:var(--bg2);backdrop-filter:blur(12px);text-align:center;transition:all 0.22s;
+}
+.tech-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.tech-icon{font-size:26px;margin-bottom:8px;}
+.tech-name{font-size:13px;font-weight:600;color:var(--t1);}
+.tech-ver{font-size:10.5px;color:var(--t3);font-family:var(--mono);margin-top:2px;}
+
+/* ── SETTINGS ── */
+.settings-section{margin-bottom:28px;}
+.ss-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.ss-title svg{width:14px;height:14px;color:var(--t3);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group label{font-size:11.5px;font-weight:500;color:var(--t3);}
+.form-group input,.form-group select,.form-group textarea{
+  padding:9px 12px;border-radius:var(--r);background:rgba(255,255,255,0.04);
+  border:1px solid var(--border2);color:var(--t1);font-size:13px;font-family:inherit;
+  outline:none;transition:border-color 0.15s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--border3);}
+.form-group input::placeholder{color:var(--t4);}
+.form-group select option{background:#0E0E18;}
+.slider-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.slider-label{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);}
+.slider-val{font-family:var(--mono);color:var(--t1);font-weight:600;}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:4px;border-radius:2px;
+  background:rgba(255,255,255,0.08);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--t1);cursor:pointer;transition:transform 0.15s;
+  box-shadow:0 0 8px rgba(255,255,255,0.2);
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info .tname{font-size:13px;font-weight:500;color:var(--t1);}
+.toggle-info .tdesc{font-size:11.5px;color:var(--t3);margin-top:2px;}
+.toggle{width:38px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);position:relative;cursor:pointer;transition:background 0.2s;border:1px solid var(--border2);flex-shrink:0;}
+.toggle.on{background:var(--c1);border-color:var(--c1);}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.toggle.on::after{transform:translateX(18px);}
+
+/* ── DANGER ZONE ── */
+.danger-zone{background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.15);border-radius:var(--rxl);padding:20px;}
+.danger-title{font-size:13px;font-weight:600;color:#EF4444;margin-bottom:4px;}
+.danger-desc{font-size:12px;color:var(--t3);margin-bottom:14px;}
+.danger-actions{display:flex;gap:10px;}
+
+/* ── DMS ── */
+.dms-panel{
+  background:var(--c4a);border:1px solid var(--c4b);border-radius:var(--rxl);
+  padding:24px;margin-bottom:16px;text-align:center;
+}
+.dms-panel.armed{animation:dmsGlow 1.5s ease-in-out infinite;}
+@keyframes dmsGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,61,0,0.1);}50%{box-shadow:0 0 30px 4px rgba(255,61,0,0.08);}}
+.dms-title{font-size:16px;font-weight:700;color:var(--c4);margin-bottom:6px;}
+.dms-subtitle{font-size:12.5px;color:var(--t3);margin-bottom:16px;}
+.dms-timer{font-size:36px;font-weight:800;font-family:var(--mono);color:var(--c4);letter-spacing:-0.02em;margin-bottom:16px;}
+.dms-actions{display:flex;gap:10px;justify-content:center;}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-box{
+  padding:16px 18px;border-radius:var(--rl);
+  background:var(--bg2);border:1px solid var(--border);text-align:center;
+  backdrop-filter:blur(10px);transition:all 0.2s;
+}
+.stat-box:hover{border-color:var(--border2);}
+.stat-num{font-size:24px;font-weight:800;letter-spacing:-0.04em;color:var(--t1);font-variant-numeric:tabular-nums;}
+.stat-lbl{font-size:11px;color:var(--t3);margin-top:3px;}
+
+/* ── API TABLE ── */
+.api-table{width:100%;border-collapse:collapse;}
+.api-table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--t4);border-bottom:1px solid var(--border);}
+.api-table td{padding:12px 16px;font-size:12.5px;color:var(--t2);border-bottom:1px solid var(--border);vertical-align:top;}
+.api-table tr:last-child td{border-bottom:none;}
+.api-table tr:hover td{background:rgba(255,255,255,0.015);}
+.api-method{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;}
+.method-post{background:rgba(62,207,142,0.1);color:var(--c1);}
+.method-get{background:rgba(139,92,246,0.1);color:var(--c3);}
+.api-path{font-family:var(--mono);font-size:12px;color:var(--t1);}
+
+/* ── HISTORY TABLE ── */
+.htable{width:100%;border-collapse:collapse;}
+.htable th{padding:9px 16px;text-align:left;font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--t4);border-bottom:1px solid var(--border);background:rgba(255,255,255,0.015);}
+.htable td{padding:11px 16px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--border);}
+.htable tr:last-child td{border-bottom:none;}
+.htable tr:hover td{background:rgba(255,255,255,0.015);}
+
+/* ── NOTICE ── */
+.notice{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;border-radius:var(--r);font-size:12.5px;line-height:1.5;}
+.notice svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
+.notice-info{background:rgba(139,92,246,0.07);border:1px solid var(--c3b);color:var(--t2);}
+.notice-info svg{color:var(--c3);}
+.notice-warn{background:rgba(245,158,11,0.07);border:1px solid var(--c2b);color:var(--t2);}
+.notice-warn svg{color:var(--c2);}
+.notice-ok{background:rgba(62,207,142,0.07);border:1px solid var(--c1b);color:var(--t2);}
+.notice-ok svg{color:var(--c1);}
+
+/* ── CANVAS CHART ── */
+#sparkCanvas{display:block;width:100%;border-radius:var(--r);}
+
+/* ── TOAST ── */
+#toasts{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--rl);
+  font-size:13px;font-weight:500;pointer-events:all;min-width:240px;max-width:360px;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+  border:1px solid;
+}
+.toast.out{animation:toastOut 0.25s ease forwards;}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px);}}
+.toast-ok{background:rgba(5,20,12,0.92);border-color:var(--c1b);color:var(--c1);}
+.toast-warn{background:rgba(20,14,5,0.92);border-color:var(--c2b);color:var(--c2);}
+.toast-err{background:rgba(20,5,5,0.92);border-color:rgba(239,68,68,0.3);color:#EF4444;}
+.toast-info{background:rgba(10,5,20,0.92);border-color:var(--c3b);color:var(--c3);}
+.toast svg{width:15px;height:15px;flex-shrink:0;}
+
+/* ── DMS FLASH ── */
+.dms-flash{position:fixed;inset:0;background:rgba(255,61,0,0.08);z-index:8888;pointer-events:none;animation:dmsFlash 0.5s ease forwards;}
+@keyframes dmsFlash{0%{opacity:0;}20%{opacity:1;}100%{opacity:0;}}
+
+/* ── MISC ── */
+.sep{width:100%;height:1px;background:var(--border);margin:20px 0;}
+.mono{font-family:var(--mono);}
+.empty{text-align:center;padding:40px 20px;color:var(--t4);font-size:13px;}
+.flex-row{display:flex;align-items:center;gap:8px;}
+.ml-auto{margin-left:auto;}
+.fw{width:100%;}
+.code-block{
+  background:rgba(0,0,0,0.45);border:1px solid var(--border);border-radius:var(--rl);
+  padding:20px;font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--t2);
+  overflow-x:auto;
+}
+.ck{color:var(--c3);}.cv{color:var(--c2);}.cs{color:var(--c1);}.cc{color:var(--t4);}
+
+/* Demo Info Modal Styles */
+#demoOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+#demoOverlay.active { opacity: 1; pointer-events: all; }
+.demo-modal { background: #0a0a0a; border: 1px solid #1f2937; padding: 24px; border-radius: 8px; width: 100%; max-width: 384px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: translateY(10px); transition: transform 0.2s ease; }
+#demoOverlay.active .demo-modal { transform: translateY(0); }
+.demo-title { color: #fff; font-size: 1.125rem; font-weight: 600; margin-bottom: 8px; }
+.demo-desc { color: #9ca3af; font-size: 0.875rem; margin-bottom: 16px; line-height: 1.4; }
+.demo-codebox { background: #111111; padding: 16px; border-radius: 4px; border: 1px solid #1f2937; font-family: var(--mono); font-size: 0.875rem; margin-bottom: 24px; }
+.demo-codebox div { color: #6b7280; }
+.demo-codebox span { color: #4ade80; margin-left: 8px; }
+.demo-btn-close { width: 100%; background: #fff; color: #000; padding: 8px 0; border: none; border-radius: 4px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+.demo-btn-close:hover { background: #e5e7eb; }
+</style>
 </head>
 <body>
-    <div class="app">
 
-        <!-- Nav -->
-        <nav class="nav" id="nav">
-            <div class="nav-left">
-                <a href="/" class="nav-logo">
-                    <div class="nav-logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 19.5h20L12 2z" fill="#EDEDED"/>
-                            <path d="M12 8l-5 9.5h10L12 8z" fill="#0A0A0A"/>
-                        </svg>
-                    </div>
-                    <span class="nav-logo-text">Vergil</span>
-                </a>
-                <div class="nav-separator"></div>
-                <span class="nav-subtitle">Command Center</span>
+<!-- Background -->
+<div class="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="grid"></div>
+  <div class="noise"></div>
+</div>
+
+<div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="slogo" onclick="navigate('overview')">
+    <div class="slogo-icon">
+      <svg viewBox="0 0 16 16"><path d="M8 2L14 6v4l-6 4-6-4V6z" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="slogo-text">Vergil</span>
+    <span class="slogo-ver">v2.1</span>
+  </div>
+  <nav class="snav">
+    <div class="nlabel">Engine</div>
+    <div class="ni active" data-page="overview" onclick="navigate('overview')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Overview
+    </div>
+    <div class="ni" data-page="events" onclick="navigate('events')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,12 5,7 8,9 12,4 15,6"/></svg>
+      Live Events
+      <span class="nbadge" id="evBadge">0</span>
+    </div>
+    <div class="nlabel">Operations</div>
+    <div class="ni" data-page="scenarios" onclick="navigate('scenarios')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="8,2 15,14 1,14"/></svg>
+      Scenarios
+    </div>
+    <div class="ni" data-page="quorum" onclick="navigate('quorum')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><circle cx="8" cy="11" r="2.5"/><line x1="5" y1="7.5" x2="8" y2="8.5"/><line x1="11" y1="7.5" x2="8" y2="8.5"/></svg>
+      Quorum Center
+      <span class="nbadge" id="qBadge" style="display:none">0</span>
+    </div>
+    <div class="nlabel">Reference</div>
+    <div class="ni" data-page="architecture" onclick="navigate('architecture')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="4" height="4" rx="1"/><rect x="11" y="1" width="4" height="4" rx="1"/><rect x="6" y="11" width="4" height="4" rx="1"/><line x1="3" y1="5" x2="3" y2="9"/><line x1="13" y1="5" x2="13" y2="9"/><line x1="3" y1="9" x2="8" y2="11"/><line x1="13" y1="9" x2="8" y2="11"/></svg>
+      Architecture
+    </div>
+    <div class="ni" data-page="settings" onclick="navigate('settings')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/></svg>
+      Settings
+    </div>
+    <div class="ni" style="color:var(--err)" onclick="auth0Logout()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8L2 8M12 8l-3-3M12 8l-3 3M6 2H2v12h4"/></svg>
+      Clear Auth Session
+    </div>
+  </nav>
+  <div class="sfooter">
+    <div class="eng-status">
+      <div class="pdot" id="engDot"></div>
+      <span id="engStatus">Engine online</span>
+    </div>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--t4);font-family:var(--mono)">
+      Cloud Run · <span id="uptimeTxt">0s</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="tb-title" id="tbTitle">Overview</span>
+      <span class="tb-sep"></span>
+      <span class="tb-crumb" id="tbCrumb">Command Center</span>
+    </div>
+    <div class="tb-right">
+      <div class="chip">
+        <span class="cdot"></span>
+        <span id="smLabel">IDLE</span>
+      </div>
+      <div class="chip">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="14" height="14" rx="2"/><path d="M5 8h6M8 5v6"/></svg>
+        Auth0
+      </div>
+      <div class="chip">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="5" rx="6" ry="2.5"/><path d="M2 5v6c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5"/></svg>
+        Redis
+      </div>
+      <span class="tb-clock" id="tbClock">--:--:--</span>
+    </div>
+  </header>
+
+  <div class="pages">
+
+    <!-- ═══════════ OVERVIEW PAGE ═══════════ -->
+    <div id="page-overview" class="page">
+
+      <!-- Hero -->
+      <div class="hero ae d1">
+        <div class="hero-eyebrow">Zero-Trust Authorization Engine</div>
+        <div class="hero-title">Vergil <span>Command Center</span></div>
+        <div class="hero-sub">Confidence-gated AI action authorization with 4-tier state machine, Auth0 step-up MFA, multi-party quorum, and Dead Man's Switch protocol.</div>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="runScenario(1)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg>
+            Run Cloud Test
+          </button>
+          <button class="btn btn-secondary" onclick="navigate('scenarios')">View Scenarios</button>
+          <button onclick="showDemoInfo()" style="margin-left:8px;font-size:12px;color:#6b7280;background:transparent;border:1px solid #1f2937;border-radius:4px;padding:6px 12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.color='#fff';this.style.borderColor='#6b7280'" onmouseout="this.style.color='#6b7280';this.style.borderColor='#1f2937'">View Demo Info</button>
+          <div class="hero-stat" style="margin-left:24px"><strong id="heroTotal">0</strong> actions processed</div>
+          <div class="hero-stat"><strong id="heroUptime">100%</strong> uptime</div>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics">
+        <div class="mc mc1 ae d2">
+          <div class="mc-dot"></div>
+          <div class="mc-label">Total Actions</div>
+          <div class="mc-val" id="mTotal">0</div>
+          <div class="mc-sub">all tiers combined</div>
+          <div class="pbar" style="margin-top:10px"><div class="pbar-fill" style="width:0%;background:var(--c1)" id="pb1"></div></div>
+        </div>
+        <div class="mc mc2 ae d3">
+          <div class="mc-dot"></div>
+          <div class="mc-label">T1 Auto-Approved</div>
+          <div class="mc-val" id="mAuto">0</div>
+          <div class="mc-sub">conf ≥ threshold</div>
+          <div class="pbar" style="margin-top:10px"><div class="pbar-fill" style="width:0%;background:var(--c2)" id="pb2"></div></div>
+        </div>
+        <div class="mc mc3 ae d4">
+          <div class="mc-dot"></div>
+          <div class="mc-label">T3 Quorum</div>
+          <div class="mc-val" id="mQuorum">0</div>
+          <div class="mc-sub">multi-party approved</div>
+          <div class="pbar" style="margin-top:10px"><div class="pbar-fill" style="width:0%;background:var(--c3)" id="pb3"></div></div>
+        </div>
+        <div class="mc mc4 ae d5">
+          <div class="mc-dot"></div>
+          <div class="mc-label">DMS Triggers</div>
+          <div class="mc-val" id="mDms">0</div>
+          <div class="mc-sub">god mode activations</div>
+          <div class="pbar" style="margin-top:10px"><div class="pbar-fill" style="width:0%;background:var(--c4)" id="pb4"></div></div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="ov-grid ae d5">
+        <!-- Event feed -->
+        <div class="gc">
+          <div class="gc-header">
+            <span class="gc-title">Live Event Feed</span>
+            <div class="flex-row">
+              <span class="gc-meta" id="evCount">0 events</span>
+              <button class="btn btn-ghost btn-sm" onclick="clearAllEvents()">Clear</button>
             </div>
-            <div class="nav-right">
-                <div class="nav-status" id="engineStatus">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText">Connecting...</span>
-                </div>
-                <button class="btn btn-icon btn-secondary" onclick="clearFeed()" title="Clear events">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
-                <span class="nav-endpoint" id="navEndpoint">localhost:8000</span>
+          </div>
+          <div id="ovFeed" style="max-height:340px;overflow-y:auto;">
+            <div class="empty" id="ovEmpty">No events yet — run a scenario to begin.</div>
+          </div>
+        </div>
+        <!-- Quick actions -->
+        <div class="gc">
+          <div class="gc-header">
+            <span class="gc-title">Quick Execute</span>
+            <span class="gc-meta">Live Scenarios</span>
+          </div>
+          <div class="qa-grid">
+            <div class="qa-btn t1" onclick="runScenario(1)">
+              <div class="qa-tier">TIER 1</div>
+              <div class="qa-name">Auto-Approve</div>
+              <div class="qa-desc">High confidence, executes instantly</div>
             </div>
-        </nav>
-
-        <!-- Main -->
-        <main class="main">
-
-            <!-- Metrics -->
-            <div class="metrics" id="metrics">
-                <div class="metric">
-                    <span class="metric-value" id="metricTotal">0</span>
-                    <span class="metric-label">Total Actions</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-value" id="metricApproved">0</span>
-                    <span class="metric-label">Auto-Approved</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-value" id="metricPending">0</span>
-                    <span class="metric-label">Pending Auth</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-value" id="metricQuorums">0</span>
-                    <span class="metric-label">Quorums</span>
-                </div>
+            <div class="qa-btn t2" onclick="runScenario(2)">
+              <div class="qa-tier">TIER 2</div>
+              <div class="qa-name">Step-Up MFA</div>
+              <div class="qa-desc">Auth0 MFA challenge required</div>
             </div>
-
-            <!-- Content Grid -->
-            <div class="content">
-
-                <!-- Action Console -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">Scenarios</span>
-                        <span class="section-badge">Interactive</span>
-                    </div>
-                    <div class="section-body">
-                        <!-- Low Risk -->
-                        <div class="scenario" id="scenarioLow" onclick="executeScenario('low')">
-                            <div class="scenario-left">
-                                <span class="scenario-tag low">Low Risk</span>
-                                <span class="scenario-name">Block Malicious IP</span>
-                                <span class="scenario-desc">Routine port scan — block source at firewall</span>
-                            </div>
-                            <div class="scenario-right">
-                                <span class="scenario-confidence">0.95</span>
-                                <span class="scenario-action-label">
-                                    Auto-Approve
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- High Risk -->
-                        <div class="scenario" id="scenarioHigh" onclick="executeScenario('high')">
-                            <div class="scenario-left">
-                                <span class="scenario-tag high">High Risk</span>
-                                <span class="scenario-name">Isolate VLAN</span>
-                                <span class="scenario-desc">Lateral movement detected — isolate VLAN segment</span>
-                            </div>
-                            <div class="scenario-right">
-                                <span class="scenario-confidence">0.75</span>
-                                <span class="scenario-action-label">
-                                    Step-Up Auth
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Critical -->
-                        <div class="scenario" id="scenarioCritical" onclick="executeScenario('critical')">
-                            <div class="scenario-left">
-                                <span class="scenario-tag critical">Critical</span>
-                                <span class="scenario-name">Wipe & Failover DB</span>
-                                <span class="scenario-desc">Global ransomware — wipe and failover to standby</span>
-                            </div>
-                            <div class="scenario-right">
-                                <span class="scenario-confidence">N/A</span>
-                                <span class="scenario-action-label">
-                                    2-of-3 Quorum
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Live Feed -->
-                <div class="section">
-                    <div class="section-header">
-                        <span class="section-title">Event Feed</span>
-                        <span class="section-badge" id="feedCount">0 events</span>
-                    </div>
-                    <div class="section-body feed" id="feed">
-                        <div class="feed-empty" id="feedEmpty">
-                            <div class="feed-empty-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                            </div>
-                            No events yet. Click a scenario to begin.
-                        </div>
-                    </div>
-                </div>
-
+            <div class="qa-btn t3" onclick="runScenario(3)">
+              <div class="qa-tier">TIER 3</div>
+              <div class="qa-name">Quorum Vote</div>
+              <div class="qa-desc">Multi-party approval needed</div>
             </div>
-
-            <!-- Custom Action -->
-            <div class="custom-section">
-                <div class="custom-header">Custom Action</div>
-                <div class="custom-form">
-                    <div class="form-group">
-                        <label class="form-label">Action</label>
-                        <input class="form-input" id="customAction" type="text" placeholder="e.g. Quarantine endpoint" />
-                    </div>
-                    <div class="form-group slider-group">
-                        <div class="slider-header">
-                            <label class="form-label">Confidence</label>
-                            <span class="slider-value" id="confValue">0.50</span>
-                        </div>
-                        <input type="range" id="confSlider" min="0" max="1" step="0.01" value="0.50" oninput="document.getElementById('confValue').textContent = this.value" />
-                    </div>
-                    <div class="form-group slider-group">
-                        <div class="slider-header">
-                            <label class="form-label">Threshold</label>
-                            <span class="slider-value" id="threshValue">0.90</span>
-                        </div>
-                        <input type="range" id="threshSlider" min="0" max="1" step="0.01" value="0.90" oninput="document.getElementById('threshValue').textContent = this.value" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">User</label>
-                        <input class="form-input" id="customUser" type="text" value="soc_admin@company.com" />
-                    </div>
-                    <button class="btn btn-primary" onclick="executeCustom()">Execute</button>
-                </div>
+            <div class="qa-btn t4" onclick="runScenario(4)">
+              <div class="qa-tier">TIER 4</div>
+              <div class="qa-name">Dead Man's Switch</div>
+              <div class="qa-desc">Override zero-trust lock</div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <!-- State Machine -->
-            <div class="state-machine">
-                <div class="section-header">
-                    <span class="section-title">Authorization State Machine</span>
-                    <span class="section-badge">Live</span>
-                </div>
-                <div class="state-flow">
-                    <div class="state-node active" id="stateIdle">IDLE</div>
-                    <div class="state-arrow">
-                        <div class="state-arrow-line"></div>
-                        <span class="state-arrow-label">execute()</span>
-                    </div>
-                    <div class="state-node" id="stateGate">CONFIDENCE GATE</div>
-                    <div class="state-arrow">
-                        <div class="state-arrow-line"></div>
-                    </div>
-                    <div class="state-branch">
-                        <div class="state-branch-row">
-                            <div class="state-arrow">
-                                <span class="state-arrow-label">conf ≥ thresh</span>
-                                <div class="state-arrow-line"></div>
-                            </div>
-                            <div class="state-node" id="stateExec">EXECUTABLE</div>
-                        </div>
-                        <div class="state-branch-row">
-                            <div class="state-arrow">
-                                <span class="state-arrow-label">conf &lt; thresh</span>
-                                <div class="state-arrow-line"></div>
-                            </div>
-                            <div class="state-node" id="statePend">PENDING</div>
-                            <div class="state-arrow">
-                                <div class="state-arrow-line"></div>
-                                <span class="state-arrow-label">callback</span>
-                            </div>
-                            <div class="state-node" id="stateApproved">APPROVED</div>
-                        </div>
-                    </div>
-                </div>
+      <!-- State machine + Chart -->
+      <div class="ov-grid2 ae d6">
+        <div class="gc">
+          <div class="gc-header">
+            <span class="gc-title">State Machine</span>
+            <span class="gc-meta" id="smCurrLabel">IDLE</span>
+          </div>
+          <div class="sm-wrap">
+            <div class="sm-row">
+              <div class="sm-node active" id="sm-idle">
+                <div class="sm-dot"></div>
+                <div class="sm-label">IDLE</div>
+              </div>
+              <div class="sm-arrow"><svg viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="4" x2="12" y2="4"/><polyline points="9,1 12,4 9,7"/></svg></div>
+              <div class="sm-node" id="sm-gate">
+                <div class="sm-dot"></div>
+                <div class="sm-label">GATE</div>
+              </div>
+              <div class="sm-arrow"><svg viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="4" x2="12" y2="4"/><polyline points="9,1 12,4 9,7"/></svg></div>
+              <div class="sm-node" id="sm-exec">
+                <div class="sm-dot"></div>
+                <div class="sm-label">EXEC</div>
+              </div>
             </div>
-        </main>
+            <div class="sm-row">
+              <div class="sm-node state-t2" id="sm-pending" style="margin-left:140px">
+                <div class="sm-dot"></div>
+                <div class="sm-label">PENDING</div>
+              </div>
+              <div class="sm-arrow"><svg viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="4" x2="12" y2="4"/><polyline points="9,1 12,4 9,7"/></svg></div>
+              <div class="sm-node state-t3" id="sm-approved">
+                <div class="sm-dot"></div>
+                <div class="sm-label">APPROVED</div>
+              </div>
+              <div class="sm-arrow"><svg viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="4" x2="12" y2="4"/><polyline points="9,1 12,4 9,7"/></svg></div>
+              <div class="sm-node state-t4" id="sm-dms">
+                <div class="sm-dot"></div>
+                <div class="sm-label">GOD MODE</div>
+              </div>
+            </div>
+            <div style="padding:10px 0 0;text-align:center;">
+              <span class="bdg bt1">Current: <span id="smStateTxt">IDLE</span></span>
+            </div>
+          </div>
+        </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <span>Vergil v1.0 · Confidence-Gated Authorization</span>
-            <span>Built for <a href="https://auth0.com" target="_blank">Auth0</a> AI Security Hackathon</span>
-        </footer>
+        <div class="gc">
+          <div class="gc-header">
+            <span class="gc-title">Activity Graph</span>
+            <span class="gc-meta">Last 20 actions</span>
+          </div>
+          <div style="padding:14px 16px 16px">
+            <canvas id="sparkCanvas" height="130"></canvas>
+            <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:50%;background:var(--c1)"></div>T1 Auto</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:50%;background:var(--c2)"></div>T2 MFA</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:50%;background:var(--c3)"></div>T3 Quorum</div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)"><div style="width:8px;height:8px;border-radius:50%;background:var(--c4)"></div>T4 DMS</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent decisions + System health -->
+      <div class="ov-grid2 ae d7">
+        <div class="gc">
+          <div class="gc-header">
+            <span class="gc-title">Recent Decisions</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('events')">View all</button>
+          </div>
+          <table class="htable" style="width:100%">
+            <thead><tr><th>Action</th><th>Tier</th><th>Status</th><th>Conf</th></tr></thead>
+            <tbody id="recentTbl"><tr><td colspan="4" class="empty" style="text-align:center">Run a scenario to see decisions</td></tr></tbody>
+          </table>
+        </div>
+        <div class="gc">
+          <div class="gc-header">
+            <span class="gc-title">System Health</span>
+            <span class="gc-meta">Live</span>
+          </div>
+          <div class="gc-body">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--t2)">Vergil Engine</span><span style="color:var(--c1);font-family:var(--mono)">ONLINE</span></div>
+                <div class="pbar"><div class="pbar-fill" style="width:100%;background:var(--c1)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--t2)">Redis Store</span><span style="color:var(--c1);font-family:var(--mono)">CONNECTED</span></div>
+                <div class="pbar"><div class="pbar-fill" style="width:100%;background:var(--c1)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--t2)">Auth0 JWKS</span><span style="color:var(--c1);font-family:var(--mono)">VERIFIED</span></div>
+                <div class="pbar"><div class="pbar-fill" style="width:100%;background:var(--c1)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--t2)">Latency (p95)</span><span style="color:var(--c2);font-family:var(--mono)" id="latency">48ms</span></div>
+                <div class="pbar"><div class="pbar-fill" style="width:35%;background:var(--c2)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--t2)">Memory</span><span style="color:var(--t2);font-family:var(--mono)" id="memUsage">142MB / 512MB</span></div>
+                <div class="pbar"><div class="pbar-fill" style="width:28%;background:var(--c3)"></div></div>
+              </div>
+            </div>
+            <div style="margin-top:18px">
+              <button class="btn btn-secondary btn-fw" onclick="pingEngine()">Ping Engine</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confidence guide -->
+      <div class="gc ae d8" style="margin-bottom:16px">
+        <div class="gc-header">
+          <span class="gc-title">Confidence Tier Routing</span>
+          <span class="gc-meta">How actions are classified</span>
+        </div>
+        <div class="gc-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <div style="padding:16px;border-radius:var(--rl);background:var(--c1a);border:1px solid var(--c1b)">
+              <div style="font-size:11px;font-weight:700;color:var(--c1);letter-spacing:0.08em;margin-bottom:6px">TIER 1</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Auto-Approve</div>
+              <div style="font-size:11.5px;color:var(--t3)">conf ≥ threshold → EXECUTABLE immediately. No human loop.</div>
+            </div>
+            <div style="padding:16px;border-radius:var(--rl);background:var(--c2a);border:1px solid var(--c2b)">
+              <div style="font-size:11px;font-weight:700;color:var(--c2);letter-spacing:0.08em;margin-bottom:6px">TIER 2</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Step-Up Auth</div>
+              <div style="font-size:11.5px;color:var(--t3)">Auth0 MFA challenge sent. PENDING until user completes.</div>
+            </div>
+            <div style="padding:16px;border-radius:var(--rl);background:var(--c3a);border:1px solid var(--c3b)">
+              <div style="font-size:11px;font-weight:700;color:var(--c3);letter-spacing:0.08em;margin-bottom:6px">TIER 3</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Quorum Vote</div>
+              <div style="font-size:11.5px;color:var(--t3)">≥2 trustees must approve via Redis WATCH/MULTI transaction.</div>
+            </div>
+            <div style="padding:16px;border-radius:var(--rl);background:var(--c4a);border:1px solid var(--c4b)">
+              <div style="font-size:11px;font-weight:700;color:var(--c4);letter-spacing:0.08em;margin-bottom:6px">TIER 4</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Dead Man's Switch</div>
+              <div style="font-size:11.5px;color:var(--t3)">Quorum timeout → override zero-trust. Temporary god mode.</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script src="dashboard.js"></script>
+    <!-- ═══════════ EVENTS PAGE ═══════════ -->
+    <div id="page-events" class="page">
+      <div class="ph ae d1">
+        <div class="ph-l">
+          <div class="pt">Live Events</div>
+          <div class="pd">Full audit log of every action processed by the Vergil engine.</div>
+        </div>
+        <div class="ph-r">
+          <button class="btn btn-secondary" onclick="exportEvents()">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8M5 7l3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+            Export
+          </button>
+          <button class="btn btn-ghost" onclick="clearAllEvents()">Clear Log</button>
+        </div>
+      </div>
+
+      <div class="stats-row ae d2">
+        <div class="stat-box"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">Total Events</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--c1)" id="stT1">0</div><div class="stat-lbl">Tier 1 Auto</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--c2)" id="stT2">0</div><div class="stat-lbl">Tier 2 MFA</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--c3)" id="stT3">0</div><div class="stat-lbl">Tier 3 Quorum</div></div>
+      </div>
+
+      <div class="gc ae d3" style="margin-bottom:16px">
+        <div class="gc-header" style="gap:12px;flex-wrap:wrap">
+          <div class="tabs" id="evTabs">
+            <div class="tab active" onclick="filterEvents('all',this)">All</div>
+            <div class="tab" onclick="filterEvents('t1',this)">T1</div>
+            <div class="tab" onclick="filterEvents('t2',this)">T2</div>
+            <div class="tab" onclick="filterEvents('t3',this)">T3</div>
+            <div class="tab" onclick="filterEvents('t4',this)">T4</div>
+          </div>
+          <div class="search-wrap" style="width:240px">
+            <svg class="si" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg>
+            <input type="text" id="evSearch" placeholder="Search actions..." oninput="searchEvents(this.value)"/>
+          </div>
+        </div>
+        <div id="evList" style="min-height:200px">
+          <div class="empty">No events yet. Run a scenario to generate events.</div>
+        </div>
+      </div>
+
+      <div class="gc ae d4">
+        <div class="gc-header"><span class="gc-title">Event Timeline</span><span class="gc-meta">Visual distribution</span></div>
+        <div style="padding:16px 20px">
+          <canvas id="timelineCanvas" height="80" style="width:100%;display:block;border-radius:var(--r)"></canvas>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t4);font-family:var(--mono);margin-top:6px">
+            <span>Oldest</span><span>Now</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SCENARIOS PAGE ═══════════ -->
+    <div id="page-scenarios" class="page">
+      <div class="ph ae d1">
+        <div class="ph-l">
+          <div class="pt">Scenarios</div>
+          <div class="pd">Simulate each authorization tier with realistic actions. Watch the engine respond in real-time.</div>
+        </div>
+        <div class="ph-r">
+          <button class="btn btn-secondary" onclick="runScenario(1);runScenario(2);runScenario(3);">Run All</button>
+        </div>
+      </div>
+
+      <div class="sc-grid ae d2">
+        <div class="sc-card t1">
+          <div class="sc-head">
+            <span class="bdg bt1">TIER 1</span>
+            <span id="sc1-last" style="font-size:10px;color:var(--t4);font-family:var(--mono)">never run</span>
+          </div>
+          <div class="sc-title">Auto-Approve</div>
+          <div class="sc-desc">Confidence exceeds threshold — action executes immediately without human intervention. The happy path for routine, well-understood operations.</div>
+          <div class="sc-conf">
+            <div class="sc-conf-label"><span>Confidence</span><span class="sc-conf-val">0.92</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:92%;background:var(--c1)"></div></div>
+            <div class="sc-conf-label" style="margin-top:8px"><span>Threshold</span><span class="sc-conf-val">0.70</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:70%;background:rgba(62,207,142,0.3)"></div></div>
+          </div>
+          <div class="sc-footer">
+            <span class="sc-last">deploy_to_staging → EXECUTABLE</span>
+            <button class="btn btn-t1" onclick="runScenario(1)" id="sc1-btn">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg>
+              Run
+            </button>
+          </div>
+        </div>
+
+        <div class="sc-card t2">
+          <div class="sc-head">
+            <span class="bdg bt2">TIER 2</span>
+            <span id="sc2-last" style="font-size:10px;color:var(--t4);font-family:var(--mono)">never run</span>
+          </div>
+          <div class="sc-title">Step-Up Auth (MFA)</div>
+          <div class="sc-desc">Confidence is below threshold — the engine requests Auth0 step-up authentication. Action stays PENDING until the user completes MFA challenge.</div>
+          <div class="sc-conf">
+            <div class="sc-conf-label"><span>Confidence</span><span class="sc-conf-val">0.54</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:54%;background:var(--c2)"></div></div>
+            <div class="sc-conf-label" style="margin-top:8px"><span>Threshold</span><span class="sc-conf-val">0.70</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:70%;background:rgba(245,158,11,0.3)"></div></div>
+          </div>
+          <div class="sc-footer">
+            <span class="sc-last">modify_prod_config → PENDING → APPROVED</span>
+            <button class="btn btn-t2" onclick="runScenario(2)" id="sc2-btn">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg>
+              Run
+            </button>
+          </div>
+        </div>
+
+        <div class="sc-card t3">
+          <div class="sc-head">
+            <span class="bdg bt3">TIER 3</span>
+            <span id="sc3-last" style="font-size:10px;color:var(--t4);font-family:var(--mono)">never run</span>
+          </div>
+          <div class="sc-title">Multi-Party Quorum</div>
+          <div class="sc-desc">High-risk action requires ≥2 trustees to independently approve via Redis WATCH/MULTI atomic transactions. Prevents any single point of compromise.</div>
+          <div class="sc-conf">
+            <div class="sc-conf-label"><span>Confidence</span><span class="sc-conf-val">0.61</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:61%;background:var(--c3)"></div></div>
+            <div class="sc-conf-label" style="margin-top:8px"><span>Required Approvals</span><span class="sc-conf-val">2 / 3</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:67%;background:rgba(139,92,246,0.3)"></div></div>
+          </div>
+          <div class="sc-footer">
+            <span class="sc-last">drop_production_db → QUORUM REQUIRED</span>
+            <button class="btn btn-t3" onclick="runScenario(3)" id="sc3-btn">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg>
+              Run
+            </button>
+          </div>
+        </div>
+
+        <div class="sc-card t4">
+          <div class="sc-head">
+            <span class="bdg bt4">TIER 4</span>
+            <span id="sc4-last" style="font-size:10px;color:var(--t4);font-family:var(--mono)">never run</span>
+          </div>
+          <div class="sc-title">Dead Man's Switch</div>
+          <div class="sc-desc">Quorum timeout triggers automatic override. The AI receives temporary elevated privileges — God Mode — as a failsafe for mission-critical contingencies.</div>
+          <div class="sc-conf">
+            <div class="sc-conf-label"><span>Countdown</span><span class="sc-conf-val" id="sc4-timer">3:00</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:100%;background:var(--c4)" id="sc4-bar"></div></div>
+            <div class="sc-conf-label" style="margin-top:8px"><span>Override Level</span><span class="sc-conf-val">GOD_MODE</span></div>
+            <div class="pbar"><div class="pbar-fill" style="width:100%;background:rgba(255,61,0,0.3)"></div></div>
+          </div>
+          <div class="sc-footer">
+            <span class="sc-last">exec_contingency_plan → GOD MODE</span>
+            <button class="btn btn-t4" onclick="runScenario(4)" id="sc4-btn">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg>
+              Run
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Action Builder -->
+      <div class="gc ae d4" style="margin-bottom:16px">
+        <div class="gc-header">
+          <span class="gc-title">Custom Action Builder</span>
+          <span class="gc-meta">Execute your own action</span>
+        </div>
+        <div class="gc-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="form-group">
+              <label>Action Name</label>
+              <input type="text" id="customAction" placeholder="e.g. deploy_to_prod" value="custom_action"/>
+            </div>
+            <div class="form-group">
+              <label>User ID</label>
+              <input type="text" id="customUser" placeholder="user_xxxx" value="ai-agent-001"/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="slider-group">
+              <div class="slider-label"><span>Confidence</span><span class="slider-val" id="confVal">0.75</span></div>
+              <input type="range" min="0" max="100" value="75" id="confSlider" oninput="document.getElementById('confVal').textContent=(this.value/100).toFixed(2);updateConfBar()"/>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Threshold</span><span class="slider-val" id="thrVal">0.70</span></div>
+              <input type="range" min="0" max="100" value="70" id="thrSlider" oninput="document.getElementById('thrVal').textContent=(this.value/100).toFixed(2)"/>
+            </div>
+          </div>
+          <div style="margin-bottom:14px">
+            <div class="slider-label" style="margin-bottom:5px"><span>Predicted tier: </span><span id="predictedTier" style="color:var(--c1);font-family:var(--mono)">T1 AUTO-APPROVE</span></div>
+            <div class="pbar"><div class="pbar-fill" id="confBar" style="width:75%;background:var(--c1);transition:width 0.3s,background 0.3s"></div></div>
+          </div>
+          <button class="btn btn-primary" onclick="executeCustom()" id="execBtn">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg>
+            Execute Action
+          </button>
+        </div>
+      </div>
+
+      <!-- Terminal output -->
+      <div class="gc ae d5" style="margin-bottom:16px">
+        <div class="gc-header">
+          <span class="gc-title">Execution Output</span>
+          <div class="flex-row">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--c1);box-shadow:0 0 6px var(--c1)"></div>
+            <span class="gc-meta">Live trace</span>
+          </div>
+        </div>
+        <div style="padding:4px 0">
+          <div class="terminal" id="terminal">
+            <div class="term-line"><span class="term-prompt">vergil@engine:~$</span> <span class="term-dim">waiting for action...</span></div>
+            <span class="term-cursor"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario history -->
+      <div class="gc ae d6">
+        <div class="gc-header"><span class="gc-title">Scenario History</span><span class="gc-meta">This session</span></div>
+        <table class="htable">
+          <thead><tr><th>Action</th><th>Confidence</th><th>Threshold</th><th>Tier</th><th>Status</th><th>Time</th></tr></thead>
+          <tbody id="scenarioHistory"><tr><td colspan="6" class="empty" style="text-align:center">No scenarios run yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════ QUORUM CENTER PAGE ═══════════ -->
+    <div id="page-quorum" class="page">
+      <div class="ph ae d1">
+        <div class="ph-l">
+          <div class="pt">Quorum Center</div>
+          <div class="pd">Manage multi-party approval requests. Trustees authenticate via Auth0 to cast votes.</div>
+        </div>
+        <div class="ph-r">
+          <button class="btn btn-t3" onclick="runScenario(3)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+            New Quorum
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-row ae d2">
+        <div class="stat-box"><div class="stat-num" style="color:var(--c3)" id="qStatActive">0</div><div class="stat-lbl">Active</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--c1)" id="qStatApproved">0</div><div class="stat-lbl">Approved</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--c2)" id="qStatPending">0</div><div class="stat-lbl">Pending</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--c4)" id="qStatDms">0</div><div class="stat-lbl">DMS Override</div></div>
+      </div>
+
+      <div class="notice notice-info ae d2" style="margin-bottom:16px">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="7" x2="8" y2="11"/><circle cx="8" cy="5" r="0.5" fill="currentColor"/></svg>
+        <span>Trustees receive Auth0 step-up MFA URLs and approve by authenticating. Redis WATCH/MULTI ensures atomic concurrency.</span>
+      </div>
+
+      <div id="quorumList" class="ae d3">
+        <div class="empty" id="qEmpty" style="padding:60px 20px">No active quorums. Run Tier 3 scenario to create one.</div>
+      </div>
+
+      <!-- DMS panel -->
+      <div class="dms-panel ae d4" id="dmsPanel">
+        <div class="dms-title">⚡ Dead Man's Switch</div>
+        <div class="dms-subtitle">Arms automatically when quorum times out. Can be manually triggered in emergency.</div>
+        <div class="dms-timer" id="dmsTimer" style="display:none">3:00</div>
+        <div class="dms-actions">
+          <button class="btn btn-t4" id="dmsArmBtn" onclick="armDMS()">Arm DMS</button>
+          <button class="btn btn-danger" id="dmsTrigBtn" onclick="triggerDMS()" style="display:none">Trigger Now</button>
+          <button class="btn btn-secondary" id="dmsDisarmBtn" onclick="disarmDMS()" style="display:none">Disarm</button>
+        </div>
+      </div>
+
+      <!-- Trustee Registry -->
+      <div class="gc ae d5" style="margin-top:16px">
+        <div class="gc-header"><span class="gc-title">Trustee Registry</span><span class="gc-meta">3 registered</span></div>
+        <div style="display:flex;flex-direction:column">
+          <div class="qt" style="border-radius:0;border-left:none;border-right:none;border-top:none">
+            <div class="qt-info">
+              <div class="qt-avatar" style="background:var(--c1a);color:var(--c1)">AA</div>
+              <div><div class="qt-name">alice@company.com</div><div class="qt-role">Lead Engineer · Trustee</div></div>
+            </div>
+            <span class="bdg bok">Active</span>
+          </div>
+          <div class="qt" style="border-radius:0;border-left:none;border-right:none;border-top:none">
+            <div class="qt-info">
+              <div class="qt-avatar" style="background:var(--c3a);color:var(--c3)">BK</div>
+              <div><div class="qt-name">bob@company.com</div><div class="qt-role">Security Officer · Trustee</div></div>
+            </div>
+            <span class="bdg bok">Active</span>
+          </div>
+          <div class="qt" style="border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:none">
+            <div class="qt-info">
+              <div class="qt-avatar" style="background:var(--c2a);color:var(--c2)">CL</div>
+              <div><div class="qt-name">carol@company.com</div><div class="qt-role">CTO · Super-Trustee</div></div>
+            </div>
+            <span class="bdg bok">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quorum History -->
+      <div class="gc ae d6" style="margin-top:16px">
+        <div class="gc-header"><span class="gc-title">Quorum History</span><span class="gc-meta">All time</span></div>
+        <table class="htable">
+          <thead><tr><th>ID</th><th>Action</th><th>Approvals</th><th>Result</th><th>Time</th></tr></thead>
+          <tbody id="quorumHistory"><tr><td colspan="5" class="empty" style="text-align:center">No completed quorums yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════ ARCHITECTURE PAGE ═══════════ -->
+    <div id="page-architecture" class="page">
+      <div class="ph ae d1">
+        <div class="ph-l">
+          <div class="pt">Architecture</div>
+          <div class="pd">System design, data flow, and technical implementation details for the Vergil engine.</div>
+        </div>
+        <div class="ph-r">
+          <button class="btn btn-secondary" onclick="window.open('https://github.com/omshukla24','_blank')">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- Flow diagram -->
+      <div class="gc ae d2" style="margin-bottom:16px">
+        <div class="gc-header"><span class="gc-title">System Flow</span><span class="gc-meta">Request lifecycle</span></div>
+        <div class="arch-flow">
+          <div class="af-node" style="border-color:var(--c3b)">
+            <div class="af-icon" style="background:var(--c3a)">🤖</div>
+            <div class="af-label">AI Agent</div>
+            <div class="af-sub">VergilClient SDK</div>
+          </div>
+          <div class="af-arrow">→</div>
+          <div class="af-node" style="border-color:var(--c1b)">
+            <div class="af-icon" style="background:var(--c1a)">⚡</div>
+            <div class="af-label">Vergil Engine</div>
+            <div class="af-sub">FastAPI ASGI</div>
+          </div>
+          <div class="af-arrow">→</div>
+          <div class="af-node" style="border-color:var(--border2)">
+            <div class="af-icon" style="background:rgba(255,255,255,0.04)">🔀</div>
+            <div class="af-label">Confidence Gate</div>
+            <div class="af-sub">conf vs threshold</div>
+          </div>
+          <div class="af-arrow">→</div>
+          <div class="af-split">
+            <div class="af-node" style="border-color:var(--c1b);min-width:90px">
+              <div class="af-sub" style="color:var(--c1)">T1 EXEC</div>
+            </div>
+            <div class="af-node" style="border-color:var(--c2b);min-width:90px">
+              <div class="af-sub" style="color:var(--c2)">T2 MFA</div>
+            </div>
+            <div class="af-node" style="border-color:var(--c3b);min-width:90px">
+              <div class="af-sub" style="color:var(--c3)">T3 QUORUM</div>
+            </div>
+            <div class="af-node" style="border-color:var(--c4b);min-width:90px">
+              <div class="af-sub" style="color:var(--c4)">T4 DMS</div>
+            </div>
+          </div>
+          <div class="af-arrow">→</div>
+          <div class="af-node" style="border-color:var(--c1b)">
+            <div class="af-icon" style="background:var(--c1a)">✅</div>
+            <div class="af-label">Infrastructure</div>
+            <div class="af-sub">Action Executed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier breakdown -->
+      <div class="gc ae d3" style="margin-bottom:16px">
+        <div class="gc-header"><span class="gc-title">4-Tier State Machine</span><span class="gc-meta">ActionState enum</span></div>
+        <div class="gc-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="padding:18px;border-radius:var(--rl);border:1px solid var(--c1b);background:var(--c1a)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span class="bdg bt1">T1</span>
+                <span style="font-size:13px;font-weight:700;color:var(--t1)">Auto-Approve</span>
+              </div>
+              <div style="font-size:12px;color:var(--t3);line-height:1.7">
+                <div>• conf ≥ threshold</div>
+                <div>• Status: <span style="color:var(--c1);font-family:var(--mono)">EXECUTABLE</span></div>
+                <div>• Latency: ~2ms</div>
+                <div>• Zero human loop</div>
+              </div>
+            </div>
+            <div style="padding:18px;border-radius:var(--rl);border:1px solid var(--c2b);background:var(--c2a)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span class="bdg bt2">T2</span>
+                <span style="font-size:13px;font-weight:700;color:var(--t1)">Step-Up Auth</span>
+              </div>
+              <div style="font-size:12px;color:var(--t3);line-height:1.7">
+                <div>• conf &lt; threshold</div>
+                <div>• Status: <span style="color:var(--c2);font-family:var(--mono)">PENDING → APPROVED</span></div>
+                <div>• Auth0 MFA per-action URL</div>
+                <div>• RS256 JWT via JWKS</div>
+              </div>
+            </div>
+            <div style="padding:18px;border-radius:var(--rl);border:1px solid var(--c3b);background:var(--c3a)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span class="bdg bt3">T3</span>
+                <span style="font-size:13px;font-weight:700;color:var(--t1)">Multi-Party Quorum</span>
+              </div>
+              <div style="font-size:12px;color:var(--t3);line-height:1.7">
+                <div>• Sensitive / high-risk</div>
+                <div>• ≥2 trustees required</div>
+                <div>• Redis WATCH/MULTI atomic</div>
+                <div>• Exponential backoff poll</div>
+              </div>
+            </div>
+            <div style="padding:18px;border-radius:var(--rl);border:1px solid var(--c4b);background:var(--c4a)">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span class="bdg bt4">T4</span>
+                <span style="font-size:13px;font-weight:700;color:var(--t1)">Dead Man's Switch</span>
+              </div>
+              <div style="font-size:12px;color:var(--t3);line-height:1.7">
+                <div>• Quorum timeout fallback</div>
+                <div>• Override zero-trust lock</div>
+                <div>• Temp elevated privileges</div>
+                <div>• Auto-resets after use</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech stack -->
+      <div class="gc ae d4" style="margin-bottom:16px">
+        <div class="gc-header"><span class="gc-title">Tech Stack</span><span class="gc-meta">Core dependencies</span></div>
+        <div class="gc-body">
+          <div class="tech-grid">
+            <div class="tech-card"><div class="tech-icon">⚡</div><div class="tech-name">FastAPI</div><div class="tech-ver">ASGI · Python 3.11+</div></div>
+            <div class="tech-card"><div class="tech-icon">🔴</div><div class="tech-name">Redis</div><div class="tech-ver">Async · WATCH/MULTI</div></div>
+            <div class="tech-card"><div class="tech-icon">🔐</div><div class="tech-name">Auth0</div><div class="tech-ver">RS256 JWT · JWKS</div></div>
+            <div class="tech-card"><div class="tech-icon">🐍</div><div class="tech-name">Pydantic v2</div><div class="tech-ver">Typed DTOs · Settings</div></div>
+            <div class="tech-card"><div class="tech-icon">📡</div><div class="tech-name">VergilClient SDK</div><div class="tech-ver">Async · Exponential Backoff</div></div>
+            <div class="tech-card"><div class="tech-icon">🔒</div><div class="tech-name">Zero-Trust</div><div class="tech-ver">4-Tier State Machine</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API reference -->
+      <div class="gc ae d5" style="margin-bottom:16px">
+        <div class="gc-header"><span class="gc-title">API Reference</span><span class="gc-meta">v1 endpoints</span></div>
+        <table class="api-table">
+          <thead><tr><th>Method</th><th>Path</th><th>Description</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><span class="api-method method-post">POST</span></td><td><span class="api-path">/api/v1/actions/execute</span></td><td>Submit action for authorization</td><td>Bearer JWT</td></tr>
+            <tr><td><span class="api-method method-post">POST</span></td><td><span class="api-path">/api/v1/actions/quorum</span></td><td>Cast trustee quorum approval</td><td>Auth0 MFA</td></tr>
+            <tr><td><span class="api-method method-get">GET</span></td><td><span class="api-path">/api/v1/actions/{id}/status</span></td><td>Poll action status</td><td>Bearer JWT</td></tr>
+            <tr><td><span class="api-method method-get">GET</span></td><td><span class="api-path">/api/v1/auth0/callback</span></td><td>Auth0 OAuth2 callback</td><td>None</td></tr>
+            <tr><td><span class="api-method method-get">GET</span></td><td><span class="api-path">/health</span></td><td>Engine health check</td><td>None</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+
+    </div>
+
+    <!-- ═══════════ SETTINGS PAGE ═══════════ -->
+    <div id="page-settings" class="page">
+      <div class="ph ae d1">
+        <div class="ph-l">
+          <div class="pt">Settings</div>
+          <div class="pd">Configure Vergil engine parameters, Auth0 integration, and security thresholds.</div>
+        </div>
+        <div class="ph-r">
+          <button class="btn btn-secondary" onclick="resetSettings()">Reset Defaults</button>
+          <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <!-- Auth0 -->
+        <div class="gc ae d2">
+          <div class="gc-header">
+            <span class="gc-title">Auth0 Configuration</span>
+            <span class="bdg bok"><span class="bd" style="background:var(--c1)"></span>Connected</span>
+          </div>
+          <div class="gc-body">
+            <div class="settings-section">
+              <div class="form-group" style="margin-bottom:12px">
+                <label>Domain</label>
+                <input type="text" value="dev-zj40rdlscwsa521x.us.auth0.com" id="auth0Domain"/>
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label>Client ID</label>
+                <input type="text" value="FD1kHnwhxOB8h7GLlfLI7o4knFd3b3SN" id="auth0ClientId"/>
+              </div>
+              <div class="form-group" style="margin-bottom:12px">
+                <label>Audience</label>
+                <input type="text" value="https://vergil-api.example.com" id="auth0Audience"/>
+              </div>
+              <div class="form-group">
+                <label>JWKS Cache TTL (seconds)</label>
+                <input type="number" value="3600" id="jwksTtl"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Redis -->
+        <div class="gc ae d3">
+          <div class="gc-header">
+            <span class="gc-title">Redis Store</span>
+            <span class="bdg bok"><span class="bd" style="background:var(--c1)"></span>Connected</span>
+          </div>
+          <div class="gc-body">
+            <div class="settings-section">
+              <div class="form-group" style="margin-bottom:12px">
+                <label>Host</label>
+                <input type="text" value="localhost" id="redisHost"/>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Port</label>
+                  <input type="number" value="6379" id="redisPort"/>
+                </div>
+                <div class="form-group">
+                  <label>DB Index</label>
+                  <input type="number" value="0" id="redisDb"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" value="" placeholder="Optional" id="redisPwd"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thresholds -->
+        <div class="gc ae d4">
+          <div class="gc-header">
+            <span class="gc-title">Tier Thresholds</span>
+            <span class="gc-meta">Confidence routing</span>
+          </div>
+          <div class="gc-body">
+            <div class="slider-group">
+              <div class="slider-label"><span style="color:var(--c1)">T1 Auto-Approve</span><span class="slider-val" id="t1ThrVal">0.70</span></div>
+              <input type="range" min="50" max="99" value="70" id="t1Thr" oninput="document.getElementById('t1ThrVal').textContent=(this.value/100).toFixed(2)"/>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span style="color:var(--c2)">T2 Step-Up Auth</span><span class="slider-val" id="t2ThrVal">0.50</span></div>
+              <input type="range" min="30" max="80" value="50" id="t2Thr" oninput="document.getElementById('t2ThrVal').textContent=(this.value/100).toFixed(2)"/>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span style="color:var(--c3)">T3 Quorum Required</span><span class="slider-val" id="t3ThrVal">0.30</span></div>
+              <input type="range" min="10" max="60" value="30" id="t3Thr" oninput="document.getElementById('t3ThrVal').textContent=(this.value/100).toFixed(2)"/>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span style="color:var(--c4)">DMS Timeout (s)</span><span class="slider-val" id="dmsToVal">180</span></div>
+              <input type="range" min="30" max="600" value="180" id="dmsThr" oninput="document.getElementById('dmsToVal').textContent=this.value+'s'"/>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>Required Approvals</span><span class="slider-val" id="reqApvVal">2</span></div>
+              <input type="range" min="1" max="5" value="2" id="reqApv" oninput="document.getElementById('reqApvVal').textContent=this.value"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="gc ae d5">
+          <div class="gc-header">
+            <span class="gc-title">Notifications &amp; Security</span>
+          </div>
+          <div class="gc-body">
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tname">DMS Auto-Trigger</div><div class="tdesc">Trigger DMS when quorum times out</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')" id="dmsAutoToggle"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tname">Audit Log</div><div class="tdesc">Write all decisions to persistent log</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tname">Slack Alerts</div><div class="tdesc">Post quorum requests to #security channel</div></div>
+              <div class="toggle" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tname">Email Trustees</div><div class="tdesc">Email trustees when approval required</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><div class="tname">Rate Limiting</div><div class="tdesc">Max 100 actions per minute per agent</div></div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="danger-zone ae d6" style="margin-top:20px">
+        <div class="danger-title">⚠ Danger Zone</div>
+        <div class="danger-desc">These actions are irreversible. They will affect all active sessions and pending quorums.</div>
+        <div class="danger-actions">
+          <button class="btn btn-danger" onclick="flushRedis()">Flush Redis Store</button>
+          <button class="btn btn-danger" onclick="resetSession()">Reset Session</button>
+          <button class="btn btn-t4" onclick="armDMS();navigate('quorum')">Arm Dead Man's Switch</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pages -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div id="toasts"></div>
+<script>
+const API_BASE = '';
+// ═══════════════════════════════
+//  STATE
+// ═══════════════════════════════
+const S = {
+  page: 'overview',
+  events: [],
+  quorums: [],
+  filter: 'all',
+  searchQ: '',
+  metrics: { total:0, auto:0, stepup:0, quorum:0, dms:0 },
+  dms: { armed:false, interval:null, seconds:180, total:180 },
+  sm: 'idle',
+  startTime: Date.now(),
+  sparkData: [],
+  quorumHistory: [],
+  scenarioHistory: [],
+};
+
+const TIER_COLORS = ['','#3ECF8E','#F59E0B','#8B5CF6','#FF3D00'];
+const TIER_NAMES  = ['','T1 AUTO','T2 MFA','T3 QUORUM','T4 DMS'];
+const ACTIONS = {
+  1:['deploy_to_staging','read_logs','query_metrics','cache_invalidate','health_check'],
+  2:['modify_prod_config','rotate_api_keys','update_firewall_rules','change_auth_policy'],
+  3:['drop_production_db','exec_batch_delete','migrate_user_data','revoke_all_tokens'],
+  4:['exec_contingency_plan','override_all_locks','emergency_shutdown','bypass_all_auth'],
+};
+
+// ═══════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════
+function navigate(to) {
+  const curr = document.querySelector('.page.active');
+  const next = document.getElementById('page-' + to);
+  if (!next || curr === next) return;
+  if (curr) {
+    curr.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+    curr.style.opacity = '0';
+    curr.style.transform = 'translateY(-8px)';
+    curr.style.pointerEvents = 'none';
+    setTimeout(() => { curr.classList.remove('active'); curr.style.cssText=''; }, 210);
+  }
+  setTimeout(() => {
+    next.classList.add('active');
+    triggerEntrance(next);
+    if (to === 'quorum') renderQuorumPage();
+    if (to === 'events') renderFullLog();
+    if (to === 'overview') drawSparkline();
+  }, curr ? 140 : 0);
+  document.querySelectorAll('.ni').forEach(n => n.classList.toggle('active', n.dataset.page === to));
+  S.page = to;
+  const titles = {overview:'Overview',events:'Live Events',scenarios:'Scenarios',quorum:'Quorum Center',architecture:'Architecture',settings:'Settings'};
+  const crumbs = {overview:'Command Center',events:'Audit Log',scenarios:'Tier Simulation',quorum:'Multi-Party Approval',architecture:'System Design',settings:'Configuration'};
+  setText('tbTitle', titles[to] || to);
+  setText('tbCrumb', crumbs[to] || '');
+}
+
+// ═══════════════════════════════
+//  ENTRANCE ANIMATIONS
+// ═══════════════════════════════
+function triggerEntrance(page) {
+  const els = page.querySelectorAll('.ae');
+  els.forEach(el => { el.classList.remove('in'); el.style.animationDelay=''; });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    els.forEach((el, i) => {
+      const base = parseFloat(el.style.animationDelay) || (i * 0.055);
+      el.style.animationDelay = base + 's';
+      el.classList.add('in');
+    });
+  }));
+}
+
+// ═══════════════════════════════
+//  RIPPLE
+// ═══════════════════════════════
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn');
+  if (!btn || btn.disabled) return;
+  const r = btn.getBoundingClientRect();
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  const sz = Math.max(r.width, r.height) * 1.5;
+  const rip = document.createElement('span');
+  rip.className = 'ripple';
+  rip.style.cssText = `width:${sz}px;height:${sz}px;left:${x - sz/2}px;top:${y - sz/2}px;`;
+  btn.appendChild(rip);
+  setTimeout(() => rip.remove(), 600);
+});
+
+// ═══════════════════════════════
+//  TOAST
+// ═══════════════════════════════
+function toast(msg, type='ok') {
+  const icons = {
+    ok:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,8 6,12 14,4"/></svg>',
+    warn:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2L15 14H1z"/><line x1="8" y1="7" x2="8" y2="10"/></svg>',
+    err:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="5" y1="5" x2="11" y2="11"/><line x1="11" y1="5" x2="5" y2="11"/></svg>',
+    info:'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="7" x2="8" y2="11"/><circle cx="8" cy="5" r="0.5" fill="currentColor"/></svg>',
+  };
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = (icons[type]||icons.info) + `<span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3200);
+}
+
+// ═══════════════════════════════
+//  CLOCK & UPTIME
+// ═══════════════════════════════
+function tickClock() {
+  const now = new Date();
+  setText('tbClock', now.toTimeString().slice(0,8));
+  const up = Math.floor((Date.now() - S.startTime) / 1000);
+  const h = Math.floor(up/3600), m = Math.floor((up%3600)/60), s = up%60;
+  setText('uptimeTxt', h>0 ? `${h}h ${m}m` : m>0 ? `${m}m ${s}s` : `${s}s`);
+  // jitter latency
+  if (Math.random() < 0.15) {
+    const lat = Math.floor(30 + Math.random()*60);
+    setText('latency', lat+'ms');
+  }
+}
+setInterval(tickClock, 1000);
+
+// ═══════════════════════════════
+//  STATE MACHINE
+// ═══════════════════════════════
+const SM_NODES = ['idle','gate','exec','pending','approved','dms'];
+const SM_TIER  = {idle:'',gate:'',exec:'t1',pending:'t2',approved:'t3',dms:'t4'};
+function setSM(state) {
+  S.sm = state;
+  SM_NODES.forEach(n => {
+    const el = document.getElementById('sm-'+n);
+    if (!el) return;
+    el.classList.remove('active');
+    el.classList.remove('state-t1','state-t2','state-t3','state-t4');
+  });
+  const el = document.getElementById('sm-'+state);
+  if (el) {
+    const tier = SM_TIER[state];
+    if (tier) el.classList.add('state-'+tier);
+    el.classList.add('active');
+  }
+  const labels = {idle:'IDLE',gate:'GATING',exec:'EXECUTABLE',pending:'PENDING',approved:'APPROVED',dms:'GOD MODE'};
+  setText('smLabel', labels[state] || state.toUpperCase());
+  setText('smCurrLabel', labels[state] || state.toUpperCase());
+  setText('smStateTxt', labels[state] || state.toUpperCase());
+}
+
+// ═══════════════════════════════
+//  ADD EVENT
+// ═══════════════════════════════
+function addEvent({ tier, action, confidence, user, status }) {
+  const ev = { id: genId(), tier, action, confidence, user, status, ts: new Date() };
+  S.events.unshift(ev);
+  S.sparkData.push(tier);
+  if (S.sparkData.length > 30) S.sparkData.shift();
+  S.metrics.total++;
+  if (tier===1) S.metrics.auto++;
+  else if (tier===2) S.metrics.stepup++;
+  else if (tier===3) S.metrics.quorum++;
+  else if (tier===4) S.metrics.dms++;
+  updateMetrics();
+  if (S.page === 'overview') { renderOvFeed(); drawSparkline(); updateRecentTable(); }
+  if (S.page === 'events') renderFullLog();
+  addScenarioHistory(ev);
+  return ev;
+}
+
+function updateMetrics() {
+  const m = S.metrics;
+  countUp('mTotal', m.total);
+  countUp('mAuto', m.auto);
+  countUp('mQuorum', m.quorum);
+  countUp('mDms', m.dms);
+  setText('heroTotal', m.total);
+  setText('stTotal', m.total);
+  setText('stT1', m.auto);
+  setText('stT2', m.stepup);
+  setText('stT3', m.quorum);
+  setText('evCount', m.total + ' event' + (m.total !== 1 ? 's' : ''));
+  setText('evBadge', m.total);
+  // progress bars
+  const t = Math.max(m.total, 1);
+  setWidth('pb1', 100);
+  setWidth('pb2', Math.round(m.auto/t*100));
+  setWidth('pb3', Math.round(m.quorum/t*100));
+  setWidth('pb4', Math.round(m.dms/t*100));
+}
+
+function countUp(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  const dur = 400, step = 16;
+  let cur = start, t = 0;
+  const iv = setInterval(() => {
+    t += step;
+    cur = Math.round(start + (target - start) * Math.min(t/dur, 1));
+    el.textContent = cur;
+    if (t >= dur) { el.textContent = target; clearInterval(iv); }
+  }, step);
+}
+
+// ═══════════════════════════════
+//  RENDER FEEDS
+// ═══════════════════════════════
+function renderOvFeed() {
+  const el = document.getElementById('ovFeed');
+  const empty = document.getElementById('ovEmpty');
+  const shown = S.events.slice(0,12);
+  if (!shown.length) { if (empty) empty.style.display=''; el.innerHTML=''; el.appendChild(empty); return; }
+  if (empty) empty.style.display='none';
+  el.innerHTML = shown.map(evHTML).join('');
+}
+
+function renderFullLog() {
+  const el = document.getElementById('evList');
+  if (!el) return;
+  let evs = S.events;
+  if (S.filter !== 'all') evs = evs.filter(e => e.tier === +S.filter.replace('t',''));
+  if (S.searchQ) evs = evs.filter(e => e.action.includes(S.searchQ));
+  if (!evs.length) { el.innerHTML = '<div class="empty">No events match this filter.</div>'; return; }
+  el.innerHTML = evs.map(evHTML).join('');
+  drawTimeline();
+}
+
+function evHTML(ev) {
+  const tierName = TIER_NAMES[ev.tier] || 'T?';
+  const tierBdg = ['','bt1','bt2','bt3','bt4'][ev.tier] || 'bt1';
+  const statBdg = {EXECUTABLE:'bok',PENDING:'bpnd',APPROVED:'bapv',REJECTED:'brej',GOD_MODE:'bt4'}[ev.status] || 'bok';
+  return `<div class="ev-item">
+    <div class="ev-tier ev-t${ev.tier}"></div>
+    <div class="ev-body">
+      <div class="ev-top">
+        <span class="ev-action">${ev.action}</span>
+        <span class="bdg ${tierBdg}">${tierName}</span>
+        <span class="bdg ${statBdg}">${ev.status}</span>
+      </div>
+      <div class="ev-meta">
+        <span>user: ${ev.user}</span>
+        <span>·</span>
+        <span class="ev-conf">conf: ${ev.confidence.toFixed(2)}</span>
+      </div>
+    </div>
+    <div class="ev-time">${timeAgo(ev.ts)}</div>
+  </div>`;
+}
+
+function updateRecentTable() {
+  const tb = document.getElementById('recentTbl');
+  if (!tb) return;
+  const rows = S.events.slice(0,6);
+  if (!rows.length) return;
+  tb.innerHTML = rows.map(ev => {
+    const tierBdg = ['','bt1','bt2','bt3','bt4'][ev.tier]||'bt1';
+    const statBdg = {EXECUTABLE:'bok',PENDING:'bpnd',APPROVED:'bapv',GOD_MODE:'bt4'}[ev.status]||'bok';
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:11.5px;color:var(--t1)">${ev.action}</td>
+      <td><span class="bdg ${tierBdg}">${TIER_NAMES[ev.tier]}</span></td>
+      <td><span class="bdg ${statBdg}">${ev.status}</span></td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--t3)">${ev.confidence.toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function addScenarioHistory(ev) {
+  S.scenarioHistory.unshift(ev);
+  const tb = document.getElementById('scenarioHistory');
+  if (!tb) return;
+  const tierBdg = ['','bt1','bt2','bt3','bt4'][ev.tier]||'bt1';
+  const statBdg = {EXECUTABLE:'bok',PENDING:'bpnd',APPROVED:'bapv',GOD_MODE:'bt4'}[ev.status]||'bok';
+  if (tb.querySelector('td[colspan]')) tb.innerHTML = '';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="font-family:var(--mono);font-size:11.5px;color:var(--t1)">${ev.action}</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--t2)">${ev.confidence.toFixed(2)}</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--t3)">0.70</td>
+    <td><span class="bdg ${tierBdg}">${TIER_NAMES[ev.tier]}</span></td>
+    <td><span class="bdg ${statBdg}">${ev.status}</span></td>
+    <td style="font-size:11px;color:var(--t4);font-family:var(--mono)">${timeAgo(ev.ts)}</td>`;
+  tb.prepend(tr);
+}
+
+// ═══════════════════════════════
+//  FILTERS
+// ═══════════════════════════════
+function filterEvents(f, el) {
+  S.filter = f;
+  document.querySelectorAll('#evTabs .tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderFullLog();
+}
+function searchEvents(q) { S.searchQ = q.trim().toLowerCase(); renderFullLog(); }
+
+// ═══════════════════════════════
+//  SCENARIOS
+// ═══════════════════════════════
+async function runScenario(tier) {
+  const btn = document.getElementById('sc'+tier+'-btn');
+  if (btn) { btn.disabled=true; btn.textContent='Running…'; }
+  const actions = ACTIONS[tier] || ['system_test'];
+  const action = actions[Math.floor(Math.random()*actions.length)];
+  const conf = [null, 0.88+Math.random()*0.1, 0.45+Math.random()*0.15, 0.55+Math.random()*0.12, 0.30+Math.random()*0.2][tier];
+
+  await runScenarioWith(tier, action, conf, 'ai-agent-001');
+
+  if (btn) { btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg> Run'; }
+}
+
+async function autoApprove(qid, idx) {
+  const q = S.quorums.find(q=>q.id===qid);
+  if (!q || q.trustees[idx].approved) return;
+  q.trustees[idx].approved = true;
+  q.approvals++;
+  q.approvedBy.push(q.trustees[idx].email);
+  termLine(`<span class="term-ok">[QUORUM]</span> ${q.trustees[idx].email} approved ✓ (${q.approvals}/${q.required})`);
+  if (q.approvals >= q.required) {
+    q.status = 'APPROVED';
+    setSM('approved');
+    addEvent({ tier:3, action:q.action, confidence:q.confidence, user:'trustees', status:'APPROVED' });
+    toast('T3: Quorum approved — ' + q.action, 'ok');
+    S.quorumHistory.unshift({...q, completedAt: new Date()});
+    updateQHistory();
+    S.quorums = S.quorums.filter(x=>x.id!==qid);
+    updateQBadge();
+    await sleep(1000);
+    setSM('idle');
+  }
+  if (S.page==='quorum') renderQuorumPage();
+}
+
+// ═══════════════════════════════
+//  QUORUM MANUAL APPROVE
+// ═══════════════════════════════
+async function approveQuorum(qid, idx) {
+  const q = S.quorums.find(q=>q.id===qid);
+  if (!q || q.trustees[idx].approved) return;
+  
+  q.trustees[idx].approved = true;
+  q.approvals++;
+  q.approvedBy.push(q.trustees[idx].email);
+  termLine(`<span class="term-ok">[QUORUM]</span> ${q.trustees[idx].email} approved ✓ (${q.approvals}/${q.required})`);
+  
+  if (q.approvals >= q.required) {
+    q.status = 'APPROVED';
+    setSM('approved');
+    addEvent({ tier:3, action:q.action, confidence:q.confidence, user:'trustees', status:'APPROVED' });
+    toast('Quorum approved: ' + q.action, 'ok');
+    S.quorumHistory.unshift({...q, completedAt: new Date()});
+    updateQHistory();
+    S.quorums = S.quorums.filter(x=>x.id!==qid);
+    updateQBadge();
+    setTimeout(() => setSM('idle'), 1000);
+  }
+  renderQuorumPage();
+  updateQStats();
+}
+
+function updateQStats() {
+  setText('qStatActive', S.quorums.length);
+  setText('qStatApproved', S.quorumHistory.filter(q=>q.status==='APPROVED').length);
+  setText('qStatPending', S.quorums.filter(q=>q.status==='PENDING').length);
+  setText('qStatDms', S.metrics.dms);
+}
+
+function updateQBadge() {
+  const b = document.getElementById('qBadge');
+  if (!b) return;
+  b.textContent = S.quorums.length;
+  b.style.display = S.quorums.length ? '' : 'none';
+  updateQStats();
+}
+
+function updateQHistory() {
+  const tb = document.getElementById('quorumHistory');
+  if (!tb) return;
+  if (!S.quorumHistory.length) return;
+  if (tb.querySelector('td[colspan]')) tb.innerHTML='';
+  S.quorumHistory.slice(0,8).forEach(q => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:var(--mono);font-size:11px;color:var(--c3)">${q.id}</td>
+      <td style="font-family:var(--mono);font-size:11.5px;color:var(--t1)">${q.action}</td>
+      <td style="font-size:11.5px;color:var(--t2)">${q.approvedBy.join(', ')}</td>
+      <td><span class="bdg bok">APPROVED</span></td>
+      <td style="font-size:11px;color:var(--t4);font-family:var(--mono)">${timeAgo(q.completedAt||new Date())}</td>`;
+    if (!tb.querySelector('tr:not(:has(td[colspan]))')) { tb.innerHTML=''; }
+    tb.appendChild(tr);
+  });
+}
+
+function renderQuorumPage() {
+  const list = document.getElementById('quorumList');
+  const empty = document.getElementById('qEmpty');
+  if (!list) return;
+  if (!S.quorums.length) {
+    list.innerHTML = '';
+    if (empty) { empty.style.display=''; list.appendChild(empty); }
+    return;
+  }
+  if (empty) empty.style.display='none';
+  list.innerHTML = S.quorums.map(q => `
+    <div class="qc">
+      <div class="qc-head">
+        <div>
+          <div class="qc-id">#${q.id}</div>
+          <div class="qc-action">${q.action}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="bdg bpnd">${q.status}</span>
+          <div style="font-size:10px;color:var(--t4);font-family:var(--mono);margin-top:4px">${timeAgo(q.ts)}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--t3);margin-bottom:5px">
+          <span>Approvals</span><span style="font-family:var(--mono);color:var(--t1)">${q.approvals} / ${q.required}</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill" style="width:${Math.round(q.approvals/q.required*100)}%;background:var(--c3);transition:width 0.6s"></div></div>
+      </div>
+      <div class="qc-trustees">
+        ${q.trustees.map((t,i) => `
+          <div class="qt ${t.approved?'approved':''}">
+            <div class="qt-info">
+              <div class="qt-avatar" style="background:${t.color}20;color:${t.color}">${t.name.split(' ').map(n=>n[0]).join('')}</div>
+              <div>
+                <div class="qt-name">${t.email}</div>
+                <div class="qt-role">${t.role}</div>
+              </div>
+            </div>
+            ${t.approved
+              ? '<span class="bdg bok">Approved ✓</span>'
+              : `<button class="btn btn-t3 btn-sm" onclick="approveQuorum('${q.id}',${i})">Approve</button>`}
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+  updateQStats();
+}
+
+// ═══════════════════════════════
+//  DEAD MAN'S SWITCH
+// ═══════════════════════════════
+function armDMS() {
+  if (S.dms.armed) return;
+  S.dms.armed = true;
+  S.dms.seconds = S.dms.total;
+  toast('DMS armed — countdown started', 'warn');
+  const panel = document.getElementById('dmsPanel');
+  const armBtn = document.getElementById('dmsArmBtn');
+  const trigBtn = document.getElementById('dmsTrigBtn');
+  const disarmBtn = document.getElementById('dmsDisarmBtn');
+  const timer = document.getElementById('dmsTimer');
+  if (panel) panel.classList.add('armed');
+  if (armBtn) armBtn.style.display='none';
+  if (trigBtn) trigBtn.style.display='';
+  if (disarmBtn) disarmBtn.style.display='';
+  if (timer) timer.style.display='';
+  S.dms.interval = setInterval(() => {
+    S.dms.seconds--;
+    const m = Math.floor(S.dms.seconds/60), s = S.dms.seconds%60;
+    if (timer) timer.textContent = m+':'+(s<10?'0':'')+s;
+    const sc4t = document.getElementById('sc4-timer');
+    const sc4b = document.getElementById('sc4-bar');
+    if (sc4t) sc4t.textContent = m+':'+(s<10?'0':'')+s;
+    if (sc4b) sc4b.style.width = Math.max(0,Math.round(S.dms.seconds/S.dms.total*100))+'%';
+    if (S.dms.seconds <= 0) { triggerDMS(); }
+  }, 1000);
+}
+
+function triggerDMS() {
+  clearInterval(S.dms.interval);
+  S.dms.armed = false;
+  const panel = document.getElementById('dmsPanel');
+  const armBtn = document.getElementById('dmsArmBtn');
+  const trigBtn = document.getElementById('dmsTrigBtn');
+  const disarmBtn = document.getElementById('dmsDisarmBtn');
+  const timer = document.getElementById('dmsTimer');
+  if (panel) panel.classList.remove('armed');
+  if (armBtn) armBtn.style.display='';
+  if (trigBtn) trigBtn.style.display='none';
+  if (disarmBtn) disarmBtn.style.display='none';
+  if (timer) { timer.style.display='none'; timer.textContent='3:00'; }
+  runScenario(4);
+}
+
+function disarmDMS() {
+  clearInterval(S.dms.interval);
+  S.dms.armed = false;
+  const panel = document.getElementById('dmsPanel');
+  const armBtn = document.getElementById('dmsArmBtn');
+  const trigBtn = document.getElementById('dmsTrigBtn');
+  const disarmBtn = document.getElementById('dmsDisarmBtn');
+  const timer = document.getElementById('dmsTimer');
+  if (panel) panel.classList.remove('armed');
+  if (armBtn) armBtn.style.display='';
+  if (trigBtn) trigBtn.style.display='none';
+  if (disarmBtn) disarmBtn.style.display='none';
+  if (timer) { timer.style.display='none'; timer.textContent='3:00'; }
+  const sc4b = document.getElementById('sc4-bar');
+  if (sc4b) sc4b.style.width='100%';
+  toast('DMS disarmed', 'ok');
+}
+
+function flashDMS() {
+  const f = document.createElement('div');
+  f.className = 'dms-flash';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 600);
+}
+
+// ═══════════════════════════════
+//  CUSTOM ACTION
+// ═══════════════════════════════
+async function executeCustom() {
+  const btn = document.getElementById('execBtn');
+  if (btn) { btn.disabled=true; btn.textContent='Executing…'; }
+  const action = document.getElementById('customAction')?.value.trim() || 'custom_action';
+  const conf = parseFloat(document.getElementById('confSlider')?.value||75) / 100;
+  const thr  = parseFloat(document.getElementById('thrSlider')?.value||70) / 100;
+  const user = document.getElementById('customUser')?.value.trim() || 'user_001';
+  const tier = conf >= thr ? 1 : conf >= thr*0.8 ? 2 : conf >= thr*0.5 ? 3 : 4;
+  await runScenarioWith(tier, action, conf, user);
+  if (btn) { btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 13,8 5,13"/></svg> Execute Action'; }
+}
+
+async function runScenarioWith(tier, action, conf, user) {
+  setSM('gate');
+  termLine(`<span class="term-prompt">vergil@engine:~$</span> execute --action ${action} --conf ${conf.toFixed(2)}`);
+  
+  if (tier === 4) {
+    setSM('dms');
+    termLine(`<span class="term-err">[T4]</span> GOD MODE — DMS override`);
+    addEvent({tier:4,action,confidence:conf,user,status:'GOD_MODE'});
+    flashDMS();
+    toast(action + ' DMS override', 'err');
+    await sleep(500);
+    setSM('idle');
+    return;
+  }
+
+  try {
+    const res = await fetch(API_BASE + '/api/v1/actions/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, confidence: conf, threshold: 0.70, user_id: user })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || data.message || 'Request failed with status ' + res.status);
+
+    if (data.status === 'EXECUTABLE') {
+      setSM('exec');
+      termLine(`<span class="term-ok">[T1]</span> EXECUTABLE — confidence sufficient`);
+      addEvent({tier:1,action,confidence:conf,user,status:'EXECUTABLE'});
+      toast(action + ' auto-approved', 'ok');
+    } else if (data.auth_url) {
+      setSM('pending');
+      termLine(`<span class="term-warn">[T2]</span> PENDING — Auth0 MFA required`);
+      addEvent({tier:2,action,confidence:conf,user,status:'PENDING'});
+      toast(action + ' pending MFA', 'warn');
+      const w = 450, h = 650;
+      const left = (window.screen.width/2)-(w/2);
+      const top = (window.screen.height/2)-(h/2);
+      window.open(data.auth_url, 'AuthFlow', `width=${w},height=${h},top=${top},left=${left}`);
+      startPolling(data.action_id, 'auth0');
+    } else if (data.quorum_id) {
+      setSM('pending');
+      termLine(`<span class="term-warn">[T3]</span> QUORUM REQUIRED — notifying trustees`);
+      addEvent({tier:3,action,confidence:conf,user,status:'PENDING'});
+      toast(action + ' awaiting quorum', 'info');
+      
+      const q = {
+        id: data.quorum_id, action, confidence: conf, status:'PENDING',
+        required: data.required_approvals || 2, approvals: 0, approvedBy: [],
+        trustees: [
+          {email:'alice@company.com',name:'Alice A',role:'Lead Engineer',color:'#3ECF8E',approved:false},
+          {email:'bob@company.com',name:'Bob K',role:'Security Officer',color:'#8B5CF6',approved:false},
+          {email:'carol@company.com',name:'Carol L',role:'CTO',color:'#F59E0B',approved:false},
+        ],
+        ts: new Date()
+      };
+      S.quorums.unshift(q);
+      updateQBadge();
+      if (S.page==='quorum') renderQuorumPage();
+    }
+  } catch (err) {
+    termLine(`<span class="term-err">[ERROR]</span> ${err.message}`);
+    toast('Error: ' + err.message, 'err');
+  }
+}
+
+async function startPolling(id, type) {
+  let attempts = 0;
+  const iv = setInterval(async () => {
+    attempts++;
+    if (attempts > 60) { clearInterval(iv); return; } // Timeout after 1 minute
+
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/actions/${id}/status`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === 'EXECUTABLE' || data.status === 'APPROVED' || data.status === 2) {
+          clearInterval(iv);
+          setSM('approved');
+          termLine(`<span class="term-ok">[EXEC]</span> status=APPROVED ✓`);
+          toast('Action approved: ' + id, 'ok');
+          setTimeout(() => setSM('idle'), 2000);
+        }
+      }
+    } catch(e) {
+      // transient error, ignore
+    }
+  }, 2000);
+}
+
+function auth0Logout() {
+  toast('Clearing remote Auth0 session...', 'info');
+  const returnTo = encodeURIComponent('https://vergil-dashboard-812606527218.us-central1.run.app/');
+  window.location.href = `https://dev-zj40rdlscwsa521x.us.auth0.com/v2/logout?client_id=FD1kHnwhxOB8h7GLlfLI7o4knFd3b3SN&returnTo=${returnTo}`;
+}
+
+function updateConfBar() {
+  const conf = parseFloat(document.getElementById('confSlider')?.value||75)/100;
+  const thr  = parseFloat(document.getElementById('thrSlider')?.value||70)/100;
+  const bar  = document.getElementById('confBar');
+  const lbl  = document.getElementById('predictedTier');
+  if (!bar||!lbl) return;
+  bar.style.width = (conf*100)+'%';
+  if (conf >= thr) { bar.style.background='var(--c1)'; lbl.style.color='var(--c1)'; lbl.textContent='T1 AUTO-APPROVE'; }
+  else if (conf >= thr*0.8) { bar.style.background='var(--c2)'; lbl.style.color='var(--c2)'; lbl.textContent='T2 STEP-UP AUTH'; }
+  else if (conf >= thr*0.5) { bar.style.background='var(--c3)'; lbl.style.color='var(--c3)'; lbl.textContent='T3 QUORUM'; }
+  else { bar.style.background='var(--c4)'; lbl.style.color='var(--c4)'; lbl.textContent='T4 DMS'; }
+}
+
+// ═══════════════════════════════
+//  TERMINAL
+// ═══════════════════════════════
+function termLine(html) {
+  const t = document.getElementById('terminal');
+  if (!t) return;
+  const cursor = t.querySelector('.term-cursor');
+  if (cursor) cursor.remove();
+  const d = document.createElement('div');
+  d.className = 'term-line';
+  d.innerHTML = html;
+  t.appendChild(d);
+  const c = document.createElement('span');
+  c.className = 'term-cursor';
+  t.appendChild(c);
+  t.scrollTop = t.scrollHeight;
+}
+
+// ═══════════════════════════════
+//  CANVAS CHARTS
+// ═══════════════════════════════
+function drawSparkline() {
+  const canvas = document.getElementById('sparkCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth * dpr, H = 130 * dpr;
+  canvas.width = W; canvas.height = H;
+  canvas.style.width = canvas.offsetWidth+'px';
+  canvas.style.height = '130px';
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const data = S.sparkData.length ? S.sparkData : [1,2,1,3,1,2,4,1,3,1];
+  const n = data.length;
+  const bw = W/n;
+  const colors = ['','#3ECF8E','#F59E0B','#8B5CF6','#FF3D00'];
+  data.forEach((tier, i) => {
+    const x = i * bw + bw*0.15;
+    const bWidth = bw * 0.7;
+    const h = [(H*0.4),(H*0.7),(H*0.85),(H*0.95),(H*0.95)][tier] || H*0.5;
+    const y = H - h;
+    const c = colors[tier] || '#3ECF8E';
+    const grad = ctx.createLinearGradient(0, y, 0, H);
+    grad.addColorStop(0, c);
+    grad.addColorStop(1, c+'22');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x, y, bWidth, h, [3*dpr,3*dpr,0,0]) : ctx.rect(x, y, bWidth, h);
+    ctx.fill();
+  });
+}
+
+function drawTimeline() {
+  const canvas = document.getElementById('timelineCanvas');
+  if (!canvas || !S.events.length) return;
+  const W = canvas.offsetWidth || 600, H = 80;
+  canvas.width = W; canvas.height = H;
+  canvas.style.width = '100%'; canvas.style.height = '80px';
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const evs = [...S.events].reverse();
+  const n = evs.length;
+  const colors = ['','#3ECF8E','#F59E0B','#8B5CF6','#FF3D00'];
+  evs.forEach((ev,i) => {
+    const x = (i/(Math.max(n-1,1))) * (W-20) + 10;
+    const y = [null,20,35,50,65][ev.tier] || 40;
+    const c = colors[ev.tier];
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI*2);
+    ctx.fillStyle = c + 'AA';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI*2);
+    ctx.fillStyle = c;
+    ctx.fill();
+    if (i > 0) {
+      const px = ((i-1)/(Math.max(n-1,1))) * (W-20) + 10;
+      const py = [null,20,35,50,65][evs[i-1].tier] || 40;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = c+'33';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  });
+}
+
+// ═══════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════
+function saveSettings() {
+  toast('Settings saved successfully', 'ok');
+}
+function resetSettings() {
+  document.getElementById('t1Thr').value=70;
+  document.getElementById('t1ThrVal').textContent='0.70';
+  document.getElementById('t2Thr').value=50;
+  document.getElementById('t2ThrVal').textContent='0.50';
+  document.getElementById('t3Thr').value=30;
+  document.getElementById('t3ThrVal').textContent='0.30';
+  document.getElementById('dmsThr').value=180;
+  document.getElementById('dmsToVal').textContent='180s';
+  toast('Settings reset to defaults', 'info');
+}
+function flushRedis() {
+  S.quorums = [];
+  updateQBadge();
+  renderQuorumPage();
+  toast('Redis store flushed', 'warn');
+}
+function resetSession() {
+  S.events=[];S.metrics={total:0,auto:0,stepup:0,quorum:0,dms:0};S.sparkData=[];
+  S.quorums=[];S.quorumHistory=[];S.scenarioHistory=[];
+  updateMetrics();
+  renderOvFeed();
+  renderFullLog();
+  renderQuorumPage();
+  updateRecentTable();
+  const tb=document.getElementById('recentTbl');
+  if(tb) tb.innerHTML='<tr><td colspan="4" class="empty" style="text-align:center">Run a scenario to see decisions</td></tr>';
+  setSM('idle');
+  toast('Session reset', 'warn');
+}
+function pingEngine() {
+  const lat = 20+Math.floor(Math.random()*60);
+  toast(`Engine ping: ${lat}ms`, 'ok');
+}
+function clearAllEvents() {
+  S.events=[];S.sparkData=[];
+  S.metrics={...S.metrics,total:0};
+  updateMetrics();
+  renderOvFeed();
+  renderFullLog();
+  updateRecentTable();
+  const tb=document.getElementById('recentTbl');
+  if(tb) tb.innerHTML='<tr><td colspan="4" class="empty" style="text-align:center">Run a scenario to see decisions</td></tr>';
+  toast('Event log cleared', 'info');
+}
+function exportEvents() {
+  if (!S.events.length) { toast('No events to export', 'warn'); return; }
+  const txt = S.events.map(e=>`[${e.ts.toISOString()}] T${e.tier} | ${e.action} | conf=${e.confidence.toFixed(2)} | ${e.status} | user=${e.user}`).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+  a.download='vergil-events-'+Date.now()+'.txt';
+  a.click();
+  toast('Events exported', 'ok');
+}
+
+// ═══════════════════════════════
+//  UTILS
+// ═══════════════════════════════
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function setWidth(id,w){const e=document.getElementById(id);if(e)e.style.width=Math.min(100,Math.max(0,w))+'%';}
+function genId(){return Math.random().toString(36).substr(2,6).toUpperCase();}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function timeAgo(d){
+  const s=Math.floor((Date.now()-d.getTime())/1000);
+  if(s<5)return 'just now';if(s<60)return s+'s ago';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  return Math.floor(s/3600)+'h ago';
+}
+
+// ═══════════════════════════════
+//  DEMO DATA
+// ═══════════════════════════════
+function initDemoData() {
+  const demos = [
+    {tier:1,action:'health_check',confidence:0.96,user:'ai-agent-001',status:'EXECUTABLE'},
+    {tier:1,action:'read_logs',confidence:0.91,user:'ai-agent-001',status:'EXECUTABLE'},
+    {tier:2,action:'rotate_api_keys',confidence:0.58,user:'ai-agent-002',status:'APPROVED'},
+    {tier:3,action:'migrate_user_data',confidence:0.62,user:'ai-agent-001',status:'APPROVED'},
+    {tier:1,action:'cache_invalidate',confidence:0.88,user:'ai-agent-003',status:'EXECUTABLE'},
+  ];
+  demos.forEach((d,i) => setTimeout(() => {
+    const ev = {...d, id:genId(), ts:new Date(Date.now()-((demos.length-i)*45000))};
+    S.events.push(ev);
+    S.sparkData.push(ev.tier);
+    S.metrics.total++;
+    if(ev.tier===1)S.metrics.auto++;
+    else if(ev.tier===2)S.metrics.stepup++;
+    else if(ev.tier===3)S.metrics.quorum++;
+  }, i*80));
+  setTimeout(() => {
+    updateMetrics();
+    renderOvFeed();
+    updateRecentTable();
+    drawSparkline();
+  }, 600);
+}
+
+// ═══════════════════════════════
+//  INIT
+// ═══════════════════════════════
+function init() {
+  navigate('overview');
+  tickClock();
+  initDemoData();
+  updateConfBar();
+  // Randomize latency display
+  setInterval(() => {
+    if(Math.random()<0.3){
+      setText('memUsage', Math.floor(130+Math.random()*40)+'MB / 512MB');
+    }
+  }, 4000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('resize', () => { if(S.page==='overview') drawSparkline(); });
+function showDemoInfo() { document.getElementById('demoOverlay').classList.add('active'); }
+function hideDemoInfo() { document.getElementById('demoOverlay').classList.remove('active'); }
+</script>
+
+<div id="demoOverlay">
+  <div class="demo-modal">
+    <div class="demo-title">Reviewer Credentials</div>
+    <div class="demo-desc">Use these credentials to test the Tier 2 Step-Up MFA and Tier 3 Quorum flows.</div>
+    <div class="demo-codebox">
+      <div>Email: <span>reviewer@company.com</span></div>
+      <div style="margin-top:8px">Pass: <span style="margin-left:12px">VergilDemo2026!</span></div>
+    </div>
+    <button class="demo-btn-close" onclick="hideDemoInfo()">Close</button>
+  </div>
+</div>
+
 </body>
 </html>
